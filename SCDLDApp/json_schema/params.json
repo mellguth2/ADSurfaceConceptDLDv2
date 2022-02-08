@@ -1,0 +1,11 @@
+{
+  "$id": "https://surface-concept.com/schema/epicsparams",
+  "title": "List Of Control Parameters",
+  "description": "A list of control parameters or readable parameters",
+  "type": "array",
+  "items": {
+    "$ref": "file:param.json"
+  },
+  "minItems": 0,
+  "uniqueItems": true
+}

@@ -1,0 +1,106 @@
+{
+  "$id": "https://surface-concept.com/schema/epicsparam",
+  "title": "Control Parameter",
+  "description": "A control parameter or readable parameter",
+  "type": "object",
+  "properties": {
+    "node": {
+      "description" : "The node property should be set to \"parameter\"",
+      "type" : "string"
+    },
+    "name": {
+      "description" : "a name with no spaces suitable for code",
+      "type" : "string"
+    },
+    "asynportname": {
+      "description" : "only for EPICS. A very short string for asyn port param strings",
+      "type" : "string"
+    },
+    "display name": {
+      "description" : "a human-friendly name suitable for user interfaces",
+      "type" : "string"
+    },
+    "description": { 
+      "description" : "describes the meaning of the parameter",
+      "type" : "string"
+    },
+    "data type" : {
+      "description" : "the data type of the parameter value",
+      "enum" : ["int32", "int64", "float64", "enum", "string", "array1d", "array2d"]
+    },
+    "element data type" : {
+      "description" : "only when data type is an array: the data type of the elements",
+      "enum" : ["i8", "u8", "i16", "u16", "i32", "u32", "i64", "u64", "f32", "f64"]
+    },
+    "read-only" : {
+      "description" : "parameter is read-only from user perspective",
+      "type" : "boolean"
+    },
+    "default" : {
+      "description" : "the default or initial value of the parameter",
+      "type" : ["number", "string"]
+    },
+    "persistent" : {
+      "description" : "parameter value should be remembered",
+      "type" : "boolean"
+    },
+    "unit" : {
+      "description" : "the physical unit of values if applicable (for UI)",
+      "type" : "string"
+    },
+    "range": {
+      "description" : "for numeric types, the valid range",
+      "type" : "object",
+      "properties" : {
+        "min" : {
+          "description" : "the minimum allowed value",
+          "type" : "number"
+        },
+        "max" : {
+          "description" : "the maximum allowed value",
+          "type" : "number"
+        }
+      }
+    },
+    "options": {
+      "description" : "for enum types, the available options with int (option name as key, integer mapping as value)",
+      "type" : "object"
+    }
+  },
+  "allOf" : [
+    {
+      "if" : {
+        "properties" : { "data type" : { "enum" : [ "int32", "int64", "float64" ] } } 
+      },
+      "then" : {
+        "required" : ["range"]
+      }
+    },
+    {
+      "if" : {
+      "properties" : { "data type" : { "const" : "enum" } }
+      },
+      "then" : {
+        "required" : ["options"]
+      }  
+    },
+    {
+      "if" : {
+      "properties" : { "data type" : { "enum" : ["array1d", "array2d"] } }
+      },
+      "then" : {
+        "required" : ["element data type"]
+      }      
+    },
+    {
+      "if" : {
+      "properties" : { "read-only" : false }
+      },
+      "then" : {
+        "required" : ["persistent"]
+      }
+    }
+  ],
+  "required": [ "name", "display name", "description", "data type", "read-only",
+    "default", "unit", "asynportname" ]
+}

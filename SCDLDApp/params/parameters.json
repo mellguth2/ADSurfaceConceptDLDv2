@@ -1,0 +1,73 @@
+[
+  {
+    "node":"parameter",
+    "name":"Initialize",
+    "asynportname":"DLD_INIT",
+    "display name":"Initialize",
+    "description":"(De)Initialize the Hardware",
+    "data type": "enum",
+    "read-only":false,
+    "default":"OFF",
+    "persistent":false,
+    "unit":"",
+    "options":{
+      "OFF":0,
+      "ON":1
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"ConfigFile",
+    "asynportname":"DLD_CFGFILE",
+    "display name":"Ini File",
+    "description":"Config/ini file for TDC",
+    "data type": "string",
+    "read-only":false,
+    "default":"tdc_gpx3.ini",
+    "persistent":true,
+    "unit":""
+  },
+  {
+    "node":"parameter",
+    "name":"StatusMessage",
+    "asynportname":"DLD_STATUSMSG",
+    "display name":"Status",
+    "description":"Last Status message",
+    "data type": "string",
+    "read-only":true,
+    "default":"",
+    "unit":""
+  },
+  {
+    "node":"parameter",
+    "name":"Exposure",
+    "asynportname":"DLD_EXPOSURE",
+    "display name":"Exposure",
+    "description":"Duration of a single measurement",
+    "data type":"float64",
+    "read-only":false,
+    "default":"1.0",
+    "persistent":true,
+    "unit":"s",
+    "range":{
+      "min":0.0,
+      "max":2e6
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"Acquire",
+    "asynportname":"DLD_ACQUIRE",
+    "display name":"Acquire",
+    "description":"Start/stop acquisition",
+    "data type":"enum",
+    "read-only":false,    
+    "default":"OFF",
+    "persistent":false,
+    "unit":"",
+    "options":{
+      "OFF":0,
+      "ON":1
+    }
+  }
+]
