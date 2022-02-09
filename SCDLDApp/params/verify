@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# verify general JSON conformity
+python3 -m json.tool parameters.json > /dev/null
+
+if [ $? -eq 0 ]; then
+  # verify against JSON schema
+  CWD=`pwd`
+  # (jsonschema does not find $ref-ed schemas from the same directory,
+  #  unless we are in that directory, so change to the schema folder:)
+  cd ../json_schema 
+  jsonschema params.json -i "${CWD}/parameters.json"
+  if [ $? -eq 0 ]; then
+    echo "verification: ok"
+  else
+    echo "(error while checking against JSON schema)"
+  fi
+else
+  echo "(error while checking general JSON conformity)"
+fi

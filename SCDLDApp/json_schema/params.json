@@ -1,10 +1,10 @@
 {
-  "$id": "https://surface-concept.com/schema/epicsparams",
+  "$id": "https://surface-concept.com/schema/ctrlparams",
   "title": "List Of Control Parameters",
   "description": "A list of control parameters or readable parameters",
   "type": "array",
   "items": {
-    "$ref": "file:param.json"
+    "$ref": "file:./param.json"
   },
   "minItems": 0,
   "uniqueItems": true

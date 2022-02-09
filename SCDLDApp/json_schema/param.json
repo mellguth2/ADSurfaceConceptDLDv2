@@ -1,5 +1,5 @@
 {
-  "$id": "https://surface-concept.com/schema/epicsparam",
+  "$id": "https://surface-concept.com/schema/ctrlparam",
   "title": "Control Parameter",
   "description": "A control parameter or readable parameter",
   "type": "object",
@@ -10,10 +10,6 @@
     },
     "name": {
       "description" : "a name with no spaces suitable for code",
-      "type" : "string"
-    },
-    "asynportname": {
-      "description" : "only for EPICS. A very short string for asyn port param strings",
       "type" : "string"
     },
     "display name": {
@@ -48,6 +44,10 @@
       "description" : "the physical unit of values if applicable (for UI)",
       "type" : "string"
     },
+    "maxlen" : {
+      "description" : "Only for strings. The maximum length allowed.",
+      "type" : "number"
+    },
     "range": {
       "description" : "for numeric types, the valid range",
       "type" : "object",
@@ -65,6 +65,10 @@
     "options": {
       "description" : "for enum types, the available options with int (option name as key, integer mapping as value)",
       "type" : "object"
+    },
+    "epicsprops" : {
+      "description" : "properties concerning EPICS (epics-controls.org)",
+      "$ref" : "file:epicsprops.json"
     }
   },
   "allOf" : [
@@ -74,6 +78,14 @@
       },
       "then" : {
         "required" : ["range"]
+      }
+    },
+    {
+      "if" : {
+        "properties" : { "data type" : { "const" : "string" } }
+      },
+      "then" : {
+        "required" : ["maxlen"]
       }
     },
     {
@@ -102,5 +114,5 @@
     }
   ],
   "required": [ "name", "display name", "description", "data type", "read-only",
-    "default", "unit", "asynportname" ]
+    "default", "unit" ]
 }

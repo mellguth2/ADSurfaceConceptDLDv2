@@ -8,7 +8,7 @@ include $(TOP)/configure/CONFIG
 INC += dldApp.h
 
 LIBRARY_IOC = dldApp
-LIB_SRCS += dldApp.cpp
+LIB_SRCS += dldApp.cpp DLD.cpp WorkerThread.cpp
 USR_CXXFLAGS += -std=c++17
 
 #=============================

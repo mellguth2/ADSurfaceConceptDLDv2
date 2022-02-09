@@ -1,0 +1,13 @@
+{
+  "$id": "https://surface-concept.com/schema/epicsparam",
+  "title": "EPICS properties for control parameter",
+  "description": "EPICS (epics-controls.org) specific properties",
+  "type": "object",
+  "properties": {
+    "asynportname": {
+      "description" : "asynportdriver parameter name used in db records (INP/OUT)",
+      "type" : "string"
+    }
+  },
+  "required": [ "asynportname" ]
+}

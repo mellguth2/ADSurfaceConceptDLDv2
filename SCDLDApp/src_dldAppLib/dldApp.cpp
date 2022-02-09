@@ -1,3 +1,5 @@
+/* Copyright 2022 Surface Concept GmbH */
+
 #include "dldApp.h"
 #include <string>
 #include <memory>

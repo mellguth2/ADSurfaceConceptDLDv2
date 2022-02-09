@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Copyright 2022 Surface Concept GmbH
+
 INFILE="../../params/parameters.json"
 OUTFILE="../_generated_glue.hpp"
 import json
@@ -23,8 +25,9 @@ reg_rd = { 'enum'   : reg_fun('read', 'enum'),
            'float64': reg_fun('read', 'float64') }
 
 def upd_fun(datatype, cpp_type):
-  s = '  void update_<NAME>(<C_ARG> v) { cb_<DT>.cb(cb_<DT>.priv, <PIDX>, v); }\n'
-  s = s.replace('<DT>', datatype).replace('<C_ARG>', cpp_type)
+  s = '  void update_<NAME>(<C_ARG> v) { cb_<DT>.cb(cb_<DT>.priv, <PIDX>, v<MF>); }\n'
+  s = s.replace('<DT>', datatype).replace('<C_ARG>', cpp_type).replace(
+    '<MF>', '.c_str()' if datatype == 'string' else '')
   def upd1(pidx, name):
     return s.replace('<PIDX>', str(pidx)).replace('<NAME>', name)
   return upd1
@@ -33,12 +36,6 @@ upd = { 'enum'  : upd_fun('enum', 'int'),
         'string': upd_fun('string', 'const std::string&'),
         'int32' : upd_fun('int32', 'int'),
         'float64' : upd_fun('float64', 'double') }
-
-"""
-  void update_Initialize(int v) { cb_int32.cb(cb_int32.priv, 0, v); }
-  void update_ConfigFile(const std::string& v) { cb_string.cb(cb_string.priv, 1, v); }
-"""
-
 
 def generate_glue(infile, outfile):
   with open(infile, "r") as f_in:

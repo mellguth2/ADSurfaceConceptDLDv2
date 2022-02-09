@@ -1,3 +1,5 @@
+/* Copyright 2022 Surface Concept GmbH */
+
 #pragma once
 
 #if __linux__
