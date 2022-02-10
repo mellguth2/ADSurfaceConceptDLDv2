@@ -50,12 +50,13 @@
     "node":"parameter",
     "name":"Exposure",
     "display name":"Exposure",
-    "description":"Duration of a single measurement",
+    "description":"Duration of a measurement",
     "data type":"float64",
     "read-only":false,
     "default":"1.0",
     "persistent":true,
     "unit":"s",
+    "precision":3,
     "range":{
       "min":0.0,
       "max":2e6

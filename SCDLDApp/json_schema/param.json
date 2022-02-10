@@ -44,6 +44,10 @@
       "description" : "the physical unit of values if applicable (for UI)",
       "type" : "string"
     },
+    "precision" : {
+      "description" : "for float data types. number of digits after comma",
+      "type" : "number"
+    },
     "maxlen" : {
       "description" : "Only for strings. The maximum length allowed.",
       "type" : "number"
@@ -78,6 +82,14 @@
       },
       "then" : {
         "required" : ["range"]
+      }
+    },
+    {
+      "if" : {
+        "properties" : { "data type" : { "const" : "float64" } } 
+      },
+      "then" : {
+        "required" : ["precision"]
       }
     },
     {

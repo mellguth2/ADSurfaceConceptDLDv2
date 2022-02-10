@@ -27,13 +27,13 @@ def generate_template(infile, outfile):
         if param['node'] != 'parameter':
           continue
         datatype = param['data type']
-        f = db_gen_fdict[datatype] # selects the db record string generator
-        # first two positional arguments are common across all db_gen_xxx(...):
+        # step 1 : select function for db record string generation
+        f = db_gen_fdict[datatype]
+        # step 2 : collect arguments to this function in f_args and f_kwargs
         f_args = [param['name'], param['epicsprops']['asynportname']]
-        # common keyword arguments:
         f_kwargs = {'defaultval'  : param['default'],
                     'description' : param['description']}
-        ### add specialties of individual data types
+        # add specialties of individual data types
         if datatype == 'enum':
           f_kwargs['options'] = param['options']
         elif datatype == 'int32':
@@ -43,11 +43,12 @@ def generate_template(infile, outfile):
           f_kwargs['unit'] = param['unit']
         elif datatype == 'string':
           f_kwargs['maxlength'] = param['maxlen']
+        # step 3 : invoke db record string generation
         # create a write parameter and a read-back parameter if not read-only:
         rwlist = (False,) if param['read-only'] else (False, True)
         nameextlist = ('',) if param['read-only'] else ('_RBV', '')
-        for outval, nameext in (rwlist, nameextlist):
-          f_args[0] = param['name'] + nameextlist
+        for outval, nameext in zip(rwlist, nameextlist):
+          f_args[0] = param['name'] + nameext
           f_kwargs['out'] = outval
           write(f(*f_args, **f_kwargs))
 
