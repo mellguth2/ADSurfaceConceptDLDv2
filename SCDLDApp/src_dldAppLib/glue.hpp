@@ -77,7 +77,7 @@ public:
   }
   int write_float64(size_t pidx, double value) {
     try {
-      return std::invoke(write_float64_funs[pidx], parent_, value);
+      return std::invoke(write_float64_funs.at(pidx), parent_, value);
     } catch (const std::out_of_range&) {
       return GLUE_ERR_OUT_OF_RANGE;
     }
@@ -91,28 +91,28 @@ public:
   }
   int write_string(size_t pidx, const char* value) {
     try {
-      return std::invoke(write_string_funs[pidx], parent_, value);
+      return std::invoke(write_string_funs.at(pidx), parent_, value);
     } catch (const std::out_of_range&) {
       return GLUE_ERR_OUT_OF_RANGE;
     }
   }
   int read_int(size_t pidx, int* dest) {
     try {
-      return std::invoke(read_int_funs[pidx], parent_, dest);
+      return std::invoke(read_int_funs.at(pidx), parent_, dest);
     } catch (const std::out_of_range&) {
       return GLUE_ERR_OUT_OF_RANGE;
     }
   }
   int read_float64(size_t pidx, double* dest) {
     try {
-      return std::invoke(read_float64_funs[pidx], parent_, dest);
+      return std::invoke(read_float64_funs.at(pidx), parent_, dest);
     } catch (const std::out_of_range&) {
       return GLUE_ERR_OUT_OF_RANGE;
     }
   }
   int read_enum(size_t pidx, int* dest) {
     try {
-      return std::invoke(read_enum_funs[pidx], parent_, dest);
+      return std::invoke(read_enum_funs.at(pidx), parent_, dest);
     } catch (const std::out_of_range&) {
       return GLUE_ERR_OUT_OF_RANGE;
     }
@@ -120,7 +120,7 @@ public:
   int read_string(size_t pidx, size_t* len, char* value) {
     try {
       std::string s;
-      int ret = std::invoke(read_string_funs[pidx], parent_, s);
+      int ret = std::invoke(read_string_funs.at(pidx), parent_, s);
       if (ret < 0) return ret;
       if (len != nullptr && value == nullptr) {
         *len = s.size()+1;
