@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include "glue.hpp"
 #include "DLD.hpp"
+#include "dldApp_inline_config.hpp"
 
 struct User
 {
@@ -109,4 +110,17 @@ int scdldapp_create_user()
 void scdldapp_delete_user(int user_id)
 {
   users_.erase(user_id);
+}
+
+const char *scdldapp_get_param_config_json()
+{
+  return param_config_data; // let's trust lib users not to write into our char
+                            // buffer
+}
+
+void scdldapp_get_version(int *ver_maj, int *ver_min, int *ver_pat)
+{
+  if (ver_maj) *ver_maj = SC_DLD_APP_LIB_VER_MAJ;
+  if (ver_min) *ver_min = SC_DLD_APP_LIB_VER_MIN;
+  if (ver_pat) *ver_pat = SC_DLD_APP_LIB_VER_PAT;
 }

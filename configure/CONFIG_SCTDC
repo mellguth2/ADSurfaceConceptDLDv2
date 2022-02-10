@@ -1,6 +1,3 @@
-# vim: set ft=conf
-
-# CCC=/rest/inst/gcc-6.1.0/usr/local/bin/g++
 USR_INCLUDES = -I${EPICS_BASE}/../scTDC/include
 USR_CXXFLAGS = -std=c++11 -Wall -Werror -Wno-unused-function
 USR_LDFLAGS  = -L${EPICS_BASE}/../scTDC

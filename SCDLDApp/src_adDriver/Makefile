@@ -12,10 +12,14 @@ ifeq (vxWorks,$(findstring vxWorks, $(T_A)))
 CODE_CXXFLAGS=
 endif
 
+# INC specifies only the public header files that should be installed
+# (header file dependencies of the driver code which determine the source files
+# to be recompiled are automatically detected and need not be listed in INC)
+
 INC += dldDetectorv2.h
 
 LIBRARY_IOC = dldDetectorv2
-LIB_SRCS += dldDetectorv2.cpp
+LIB_SRCS += dldDetectorv2.cpp DldAppLibParams.cpp WorkerThread.cpp
 
 LIB_LIBS += dldApp
 
