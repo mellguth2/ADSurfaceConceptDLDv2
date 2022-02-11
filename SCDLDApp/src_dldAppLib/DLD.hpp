@@ -14,6 +14,9 @@ class DLD : public Glue<DLD>
   int dev_desc_;
   double exposure_;
   int acquire_;
+  int image_mode_;
+  int num_images_;
+  int data_type_;
 public:
   DLD();
   int write_Initialize(int);
@@ -25,6 +28,13 @@ public:
   int read_Exposure(double*);
   int write_Acquire(int);
   int read_Acquire(int*);
+  int write_ImageMode(int);
+  int read_ImageMode(int*);
+  int write_NumImages(int);
+  int read_NumImages(int*);
+  int write_DataType(int);
+  int read_DataType(int*);
+
 
 private:
   int init_impl();

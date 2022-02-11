@@ -4,7 +4,7 @@
 # Copyright 2022 Surface Concept GmbH
 
 INFILE="../../params/parameters.json"
-OUTFILE="../_generated.template"
+OUTFILE="../dldDetectorv2.template"
 import json
 from template_parts import TEMPLATE_START, db_gen_enum, db_gen_int32, \
   db_gen_float64, db_gen_string
@@ -26,11 +26,16 @@ def generate_template(infile, outfile):
       for param in parameters:
         if param['node'] != 'parameter':
           continue
+        asynportname = param['epicsprops']['asynportname']
+        # don't generate db entry for params provided by ADDriver base
+        # class, indicated in the config by empty asynportname
+        if len(asynportname) == 0:
+          continue
         datatype = param['data type']
         # step 1 : select function for db record string generation
         f = db_gen_fdict[datatype]
         # step 2 : collect arguments to this function in f_args and f_kwargs
-        f_args = [param['name'], param['epicsprops']['asynportname']]
+        f_args = [param['name'], asynportname]
         f_kwargs = {'defaultval'  : param['default'],
                     'description' : param['description']}
         # add specialties of individual data types

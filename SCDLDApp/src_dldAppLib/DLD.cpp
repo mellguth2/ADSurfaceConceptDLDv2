@@ -10,7 +10,9 @@ DLD::DLD()
     initialized_(0),
     dev_desc_(-1),
     exposure_(1.0),
-    acquire_(0)
+    acquire_(0),
+    image_mode_(0),
+    num_images_(1)
 {
 
 }
@@ -106,6 +108,42 @@ int DLD::write_Acquire(int v)
 int DLD::read_Acquire(int *dest)
 {
   *dest = acquire_;
+  return 0;
+}
+
+int DLD::write_ImageMode(int v)
+{
+  image_mode_ = v;
+  return 0;
+}
+
+int DLD::read_ImageMode(int *dest)
+{
+  *dest = image_mode_;
+  return 0;
+}
+
+int DLD::write_NumImages(int v)
+{
+  num_images_ = v;
+  return 0;
+}
+
+int DLD::read_NumImages(int *dest)
+{
+  *dest = num_images_;
+  return 0;
+}
+
+int DLD::write_DataType(int v)
+{
+  data_type_ = v;
+  return 0;
+}
+
+int DLD::read_DataType(int *dest)
+{
+  *dest = data_type_;
   return 0;
 }
 

@@ -4,7 +4,7 @@
 # Copyright 2022 Surface Concept GmbH
 
 INFILE="../../params/parameters.json"
-OUTFILE="../_generated_glue.hpp"
+OUTFILE="../glue.hpp"
 import json
 from glueparts import code1, code2, code3
 

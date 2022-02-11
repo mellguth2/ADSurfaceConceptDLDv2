@@ -66,6 +66,12 @@ public:
     read_float64_funs.insert({3, &T::read_Exposure});
     write_enum_funs.insert({4, &T::write_Acquire});
     read_enum_funs.insert({4, &T::read_Acquire});
+    write_enum_funs.insert({5, &T::write_ImageMode});
+    read_enum_funs.insert({5, &T::read_ImageMode});
+    write_int_funs.insert({6, &T::write_NumImages});
+    read_int_funs.insert({6, &T::read_NumImages});
+    write_enum_funs.insert({7, &T::write_DataType});
+    read_enum_funs.insert({7, &T::read_DataType});
   }
 
   int write_int(size_t pidx, int value) {
@@ -143,5 +149,8 @@ public:
   void update_StatusMessage(const std::string& v) { cb_string.cb(cb_string.priv, 2, v.c_str()); }
   void update_Exposure(double v) { cb_float64.cb(cb_float64.priv, 3, v); }
   void update_Acquire(int v) { cb_enum.cb(cb_enum.priv, 4, v); }
+  void update_ImageMode(int v) { cb_enum.cb(cb_enum.priv, 5, v); }
+  void update_NumImages(int v) { cb_int32.cb(cb_int32.priv, 6, v); }
+  void update_DataType(int v) { cb_enum.cb(cb_enum.priv, 7, v); }
 
 };

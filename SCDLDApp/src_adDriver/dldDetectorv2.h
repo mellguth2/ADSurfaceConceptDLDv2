@@ -8,6 +8,7 @@
 /** Surface Concept GmbH, DLD detector driver version 2 */
 class epicsShareClass dldDetectorv2 : public ADDriver {
 public:
+  static const int PARAM_UNHANDLED = 999;
   dldDetectorv2(const char *portName, int maxSizeX, int maxSizeY,
     NDDataType_t dataType,
     int maxBuffers, size_t maxMemory,
@@ -15,14 +16,20 @@ public:
 
   void terminate();
 
-  /* These are the methods that we override from ADDriver */
-  virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
-  virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
+  virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value) override;
+
+  virtual asynStatus writeFloat64(
+    asynUser *pasynUser, epicsFloat64 value) override;
+
+  virtual asynStatus writeOctet(
+    asynUser *pasynUser, const char *value, size_t nChars,
+    size_t *nActual) override;
+
   virtual void report(FILE *fp, int details);
 
 private:
   /* Our data */
   NDArray *pRaw;
   WorkerThread worker_;
-  DldAppLibUser app_lib_user_;
+  DldApp::LibUser app_lib_user_;
 };

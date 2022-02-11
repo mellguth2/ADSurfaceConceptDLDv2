@@ -41,9 +41,9 @@
     "read-only":true,
     "default":"",
     "unit":"",
-    "maxlen":2048,
+    "maxlen":256,
     "epicsprops":{
-      "asynportname":"DLD_STATUSMSG"
+      "asynportname":""
     }
   },
   {
@@ -62,7 +62,7 @@
       "max":2e6
     },
     "epicsprops":{
-      "asynportname":"DLD_EXPOSURE"
+      "asynportname":""
     }
   },
   {
@@ -80,7 +80,68 @@
       "ON":1
     },
     "epicsprops":{
-      "asynportname":"DLD_ACQUIRE"
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"ImageMode",
+    "display name":"Image mode",
+    "description":"Single img or sequence",
+    "data type": "enum",
+    "read-only":false,
+    "default":"Single",
+    "persistent":false,
+    "unit":"",
+    "options":{
+      "Single":0,
+      "Multiple":1,
+      "Continous":2
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"NumImages",
+    "display name":"Number of images",
+    "description":"Number of images",
+    "data type":"int32",
+    "read-only":false,
+    "default":"10",
+    "persistent":true,
+    "unit":"",
+    "range":{
+      "min":1,
+      "max":1e6
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"DataType",
+    "display name":"Data type",
+    "description":"data type of images",
+    "data type": "enum",
+    "read-only":false,
+    "default":"UInt32",
+    "persistent":false,
+    "unit":"",
+    "options":{
+      "Int8":0,
+      "UInt8":1,
+      "Int16":2,
+      "UInt16":3,
+      "Int32":4,
+      "UInt32":5,
+      "Float32":6,
+      "Float64":7
+    },
+    "epicsprops":{
+      "asynportname":""
     }
   }
 ]
