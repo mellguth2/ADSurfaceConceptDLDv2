@@ -36,15 +36,19 @@ struct WorkerThread::Priv {
 
   void addTask(std::function<void ()> t) {
     if (!alive()) return;
-    std::lock_guard<std::mutex> l(messages_mutex_);
-    messages_.emplace(ADD_TASK, t);
+    {
+      std::lock_guard<std::mutex> l(messages_mutex_);
+      messages_.emplace(ADD_TASK, t);
+    }
     sema_message_.signal();
   }
 
   void terminate() {
     if (!alive()) return;
-    std::lock_guard<std::mutex> l(messages_mutex_);
-    messages_.emplace(TERMINATE);
+    {
+      std::lock_guard<std::mutex> l(messages_mutex_);
+      messages_.emplace(TERMINATE);
+    }
     sema_message_.signal();
     thread_->join();
     thread_.reset();

@@ -19,7 +19,7 @@ endif
 INC += dldDetectorv2.h
 
 LIBRARY_IOC = dldDetectorv2
-LIB_SRCS += dldDetectorv2.cpp DldAppLibParams.cpp WorkerThread.cpp
+LIB_SRCS += dldDetectorv2.cpp DldAppLibParams.cpp WorkerThread.cpp InitLibDataFromJSON.cpp
 
 LIB_LIBS += dldApp
 

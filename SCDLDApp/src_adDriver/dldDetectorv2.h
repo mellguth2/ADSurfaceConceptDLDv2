@@ -31,5 +31,5 @@ private:
   /* Our data */
   NDArray *pRaw;
   WorkerThread worker_;
-  DldApp::LibUser app_lib_user_;
+  DldApp::LibUser libusr_;
 };

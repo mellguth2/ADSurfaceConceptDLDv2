@@ -45,7 +45,7 @@ asynStatus dldDetectorv2::writeInt32(asynUser *pasynUser, epicsInt32 value)
     else if (ret != DLDAPPLIB_NOT_MY_PARAM) {
       std::ostringstream oss;
       oss << driverName << ":writeInt32() : app library returned error "
-          << ret << " for parameter " << app_lib_user_.paramName(param_idx);
+          << ret << " for parameter " << libusr_.paramName(param_idx);
       asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s\n", oss.str().c_str());
       return asynError;
     }
@@ -53,45 +53,17 @@ asynStatus dldDetectorv2::writeInt32(asynUser *pasynUser, epicsInt32 value)
       return static_cast<asynStatus>(PARAM_UNHANDLED); // (evil) ^^
     }
   };
-  asynStatus ret = handle_ret(app_lib_user_.writeInt32(param_idx, value));
-  if (ret == asynSuccess) {
-    app_lib_user_.readInt32(param_idx, [&](int v) { setIntegerParam(param_idx, v); });
-  }
+  auto upPar = std::function<void(const int&)>(
+    [&](const int& v) { setIntegerParam(param_idx, v); callParamCallbacks(); });
+
+  asynStatus ret = handle_ret(libusr_.writeAndReadAny(param_idx, value, upPar));
   if (ret != static_cast<asynStatus>(PARAM_UNHANDLED)) return ret;
-  // this point is reached if the parameter JSON specified an empty asynportname,
-  // or the app library does not know the parameter.
 
-  // manually map parameters pre-defined by the ADDriver to the application lib
-  if (param_idx == ADAcquire) {
-    ret = handle_ret(app_lib_user_.writeInt32("Acquire", value));
-    if (ret == asynSuccess) {
-      app_lib_user_.readInt32("Acquire", [&](int v) { setIntegerParam(ADAcquire, v); });
-    }
-    return ret;
-  }
-  else if (param_idx == ADImageMode) {
-    ret = handle_ret(app_lib_user_.writeInt32("ImageMode", value));
-    if (ret == asynSuccess) {
-      app_lib_user_.readInt32("ImageMode", [&](int v) { setIntegerParam(ADImageMode, v); });
-    }
-  }
-  else if (param_idx == ADNumImages) {
-    ret = handle_ret(app_lib_user_.writeInt32("NumImages", value));
-    if (ret == asynSuccess) {
-      app_lib_user_.readInt32("NumImages", [&](int v) { setIntegerParam(ADNumImages, v); });
-    }
-    return ret;
-  }
-  else if (param_idx == NDDataType) {
-    ret = handle_ret(app_lib_user_.writeInt32("DataType", value));
-    if (ret == asynSuccess) {
-      app_lib_user_.readInt32("DataType", [&](int v) { setIntegerParam(NDDataType, v); });
-    }
-  }
-
+  // this point is reached if the application lib does not have any
+  // corresponding parameter
   asynStatus status = setIntegerParam(param_idx, value);
 
-  if (param_idx < app_lib_user_.firstDriverParamIdx()) {
+  if (param_idx < libusr_.firstDriverParamIdx()) {
     status = ADDriver::writeInt32(pasynUser, value);
   }
   callParamCallbacks();
@@ -120,7 +92,7 @@ asynStatus dldDetectorv2::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
     else if (ret != DLDAPPLIB_NOT_MY_PARAM) {
       std::ostringstream oss;
       oss << driverName << ":writeFloat64() : app library returned error "
-          << ret << " for parameter " << app_lib_user_.paramName(param_idx);
+          << ret << " for parameter " << libusr_.paramName(param_idx);
       asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s\n", oss.str().c_str());
       return asynError;
     }
@@ -129,19 +101,17 @@ asynStatus dldDetectorv2::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
     }
   };
 
-  asynStatus ret = handle_ret(app_lib_user_.writeFloat64(param_idx, value));
+  auto upPar = std::function<void(const double&)>(
+    [&](const double& v) { setDoubleParam(param_idx, v); callParamCallbacks(); });
+
+  asynStatus ret = handle_ret(libusr_.writeAndReadAny(param_idx, value, upPar));
   if (ret != static_cast<asynStatus>(PARAM_UNHANDLED)) return ret;
-  // this point is reached if the parameter JSON specified an empty asynportname,
-  // or there is no corresponding parameter
 
-  // manually map parameters pre-defined by the ADDriver to the application lib
-  if (param_idx == ADAcquireTime) {
-    return handle_ret(app_lib_user_.writeFloat64("Exposure", value));
-  }
-
+  // this point is reached if the application lib does not have any
+  // corresponding parameter
   asynStatus status = setDoubleParam(param_idx, value);
 
-  if (param_idx < app_lib_user_.firstDriverParamIdx()) {
+  if (param_idx < libusr_.firstDriverParamIdx()) {
     status = ADDriver::writeFloat64(pasynUser, value);
   }
 
@@ -175,7 +145,7 @@ asynStatus dldDetectorv2::writeOctet(
     else if (ret != DLDAPPLIB_NOT_MY_PARAM) {
       std::ostringstream oss;
       oss << driverName << ":writeOctet() : app library returned error "
-          << ret << " for parameter " << app_lib_user_.paramName(param_idx);
+          << ret << " for parameter " << libusr_.paramName(param_idx);
       asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s\n", oss.str().c_str());
       return asynError;
     }
@@ -184,7 +154,13 @@ asynStatus dldDetectorv2::writeOctet(
     }
   };
 
-  asynStatus ret = handle_ret(app_lib_user_.writeString(param_idx, value));
+  auto upPar = std::function<void(const std::string&)>(
+    [&](const std::string& v) {
+      setStringParam(param_idx, v.c_str()); callParamCallbacks();
+    });
+
+  asynStatus ret =
+    handle_ret(libusr_.writeAndReadAny(param_idx, std::string(value), upPar));
   if (ret != static_cast<asynStatus>(PARAM_UNHANDLED)) {
     *nActual = nChars; // TODO check if library imposes string length restrictions
     return ret;
@@ -194,7 +170,7 @@ asynStatus dldDetectorv2::writeOctet(
 
   asynStatus status = setStringParam(param_idx, value);
 
-  if (param_idx < app_lib_user_.firstDriverParamIdx()) {
+  if (param_idx < libusr_.firstDriverParamIdx()) {
     status = ADDriver::writeOctet(pasynUser, value, nChars, nActual);
   }
 
@@ -257,7 +233,7 @@ dldDetectorv2::dldDetectorv2(
   : ADDriver(
       portName,
       1, // max_instances
-      DldApp::Lib::instance().numberParams(),
+      DldApp::Lib::instance().numberDrvParams(),
       maxBuffers,
       maxMemory,
       0, 0, /* No interfaces beyond those set in ADDriver.cpp */
@@ -269,10 +245,18 @@ dldDetectorv2::dldDetectorv2(
   int status = asynSuccess;
   const char *functionName = "dldDetectorv2";
 
-  app_lib_user_.createParams(
+  libusr_.createParams(
     [this](const char* name, asynParamType aptype, int* apidx) {
       return createParam(name, aptype, apidx);
     });
+  // manually link parameters that are pre-defined by ADDriver base class
+  // if they have a correspondence in the application library
+  libusr_.linkParam(ADAcquire, asynParamInt32, "Acquire");
+  libusr_.linkParam(ADImageMode, asynParamInt32, "ImageMode");
+  libusr_.linkParam(ADNumImages, asynParamInt32, "NumImages");
+  libusr_.linkParam(NDDataType, asynParamInt32, "DataType");
+  libusr_.linkParam(ADAcquireTime, asynParamFloat64, "Exposure");
+  libusr_.linkParam(ADStatusMessage, asynParamOctet, "StatusMessage");
 
   /* the following parameters are supplied by the ADDriver base
    * class */
