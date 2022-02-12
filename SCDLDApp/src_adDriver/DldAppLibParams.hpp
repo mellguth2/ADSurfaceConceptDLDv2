@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include <unordered_map>
 #include <functional>
 #include <asynParamType.h>
@@ -66,6 +67,22 @@ private:
   void operator=(Lib const&) = delete;
 };
 
+class UpdateConsumer
+{
+public:
+  virtual void UpdateInt32(std::size_t libpidx, int) = 0;
+  virtual void UpdateFloat64(std::size_t libpidx, double) = 0;
+  virtual void UpdateString(std::size_t libpidx, const std::string&) = 0;
+};
+
+class UpdateConsumerNoOp : UpdateConsumer
+{
+public:
+  virtual void UpdateInt32(std::size_t, int) override {}
+  virtual void UpdateFloat64(std::size_t, double) override {}
+  virtual void UpdateString(std::size_t, const std::string&) override {}
+};
+
 /**
  * @brief objects of this class should be made members of the asynPortDriver
  * instance, since they provide the mapping of asynPortDriver parameter IDs to
@@ -77,6 +94,7 @@ class LibUser
   std::vector<int> param_back_refs_;           // app lib -> asynPortDrv
   int user_id_;
   int first_driver_param_;
+  std::unique_ptr<UpdateConsumer> update_consumer_;
 public:
   LibUser();
   ~LibUser();
@@ -96,6 +114,9 @@ public:
    * @return 0 on success
    */
   int linkParam(int drvpidx, asynParamType t, const std::string& libpname);
+
+  int setUpdateConsumer(std::unique_ptr<UpdateConsumer>&&);
+  void resetUpdateConsumer();
 
   template <typename ValueType>
   int writeAny(int drvpidx, const ValueType& value);
@@ -119,6 +140,7 @@ public:
 
   int firstDriverParamIdx() const;
   std::size_t ap2lib(int asynport_param_idx) const; // may throw std::out_of_range
+  int lib2ap(std::size_t libpidx) const;
   std::string paramName(int asynport_param_idx) const;
   DatatypeEnum libdatatype(int asynport_param_idx) const;
   const Param& libParam(int asynport_param_idx) const;
@@ -131,6 +153,15 @@ private:
   int writeAnyImpl(int libpidx, DatatypeEnum, const ValueType&);
   template <typename ValueType>
   int readAnyImpl(int libpidx, DatatypeEnum, std::function<void(const ValueType&)>);
+
+  void cb_int32(size_t, int);
+  void cb_float64(size_t, double);
+  void cb_string(size_t, const char*);
+  void cb_enum(size_t, int);
+  static void static_cb_int32(void*, size_t, int);
+  static void static_cb_float64(void*, size_t, double);
+  static void static_cb_string(void*, size_t, const char*);
+  static void static_cb_enum(void*, size_t, int);
 };
 
 } // namespace DldApp

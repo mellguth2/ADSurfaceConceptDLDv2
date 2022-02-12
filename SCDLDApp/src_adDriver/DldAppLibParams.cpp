@@ -105,6 +105,10 @@ LibUser::LibUser()
     throw std::runtime_error("scdldapp_create_user() returned an error");
   }
   user_id_ = ret;
+  scdldapp_set_callback_enum(user_id_, this, static_cb_enum);
+  scdldapp_set_callback_int32(user_id_, this, static_cb_int32);
+  scdldapp_set_callback_float64(user_id_, this, static_cb_float64);
+  scdldapp_set_callback_string(user_id_, this, static_cb_string);
 }
 
 LibUser::~LibUser()
@@ -160,7 +164,18 @@ int LibUser::linkParam(int drvpidx, asynParamType t, const std::string& libpname
     libpname, t, [&](std::size_t libpidx) {
       param_refs_[drvpidx] = libpidx;
       param_back_refs_.at(libpidx) = drvpidx;
-    });
+  });
+}
+
+int LibUser::setUpdateConsumer(std::unique_ptr<UpdateConsumer>&& c)
+{
+  update_consumer_ = std::move(c);
+  return 0;
+}
+
+void LibUser::resetUpdateConsumer()
+{
+  update_consumer_.reset();
 }
 
 template <typename ValueType>
@@ -360,6 +375,54 @@ int LibUser::readStrImpl(
   return ret;
 }
 
+void LibUser::cb_int32(size_t pidx, int val)
+{
+  if (update_consumer_) {
+    update_consumer_->UpdateInt32(pidx, val);
+  }
+}
+
+void LibUser::cb_float64(size_t pidx, double val)
+{
+  if (update_consumer_) {
+    update_consumer_->UpdateFloat64(pidx, val);
+  }
+}
+
+void LibUser::cb_string(size_t pidx, const char* val)
+{
+  if (update_consumer_) {
+    update_consumer_->UpdateString(pidx, val);
+  }
+}
+
+void LibUser::cb_enum(size_t pidx, int val)
+{
+  if (update_consumer_) {
+    update_consumer_->UpdateInt32(pidx, val);
+  }
+}
+
+void LibUser::static_cb_int32(void* priv, size_t pidx, int val)
+{
+  reinterpret_cast<LibUser*>(priv)->cb_int32(pidx, val);
+}
+
+void LibUser::static_cb_float64(void* priv, size_t pidx, double val)
+{
+  reinterpret_cast<LibUser*>(priv)->cb_float64(pidx, val);
+}
+
+void LibUser::static_cb_string(void* priv, size_t pidx, const char* val)
+{
+  reinterpret_cast<LibUser*>(priv)->cb_string(pidx, val);
+}
+
+void LibUser::static_cb_enum(void* priv, size_t pidx, int val)
+{
+  reinterpret_cast<LibUser*>(priv)->cb_enum(pidx, val);
+}
+
 int LibUser::firstDriverParamIdx() const
 {
   return first_driver_param_;
@@ -368,6 +431,15 @@ int LibUser::firstDriverParamIdx() const
 std::size_t LibUser::ap2lib(int asynport_param_idx) const
 {
   return param_refs_.at(asynport_param_idx);
+}
+
+int LibUser::lib2ap(std::size_t libpidx) const
+{
+  try {
+    return param_back_refs_.at(libpidx);
+  } catch (const std::out_of_range&) {
+    return -1;
+  }
 }
 
 std::string LibUser::paramName(int asynport_param_idx) const

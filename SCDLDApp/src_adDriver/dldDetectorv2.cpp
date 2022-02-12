@@ -212,6 +212,7 @@ void dldDetectorv2::report(FILE *fp, int details)
 
 void dldDetectorv2::terminate()
 {
+  libusr_.resetUpdateConsumer();
   worker_.terminate();
 }
 
@@ -257,6 +258,52 @@ dldDetectorv2::dldDetectorv2(
   libusr_.linkParam(NDDataType, asynParamInt32, "DataType");
   libusr_.linkParam(ADAcquireTime, asynParamFloat64, "Exposure");
   libusr_.linkParam(ADStatusMessage, asynParamOctet, "StatusMessage");
+
+  class ADUpdateConsumer : public DldApp::UpdateConsumer {
+    dldDetectorv2* parent_;
+  public:
+    ADUpdateConsumer(dldDetectorv2* parent) : parent_(parent) {}
+    // updates may be issued by the library synchronously in the course of
+    // processing a write-parameter-request or spontaneously at any point in
+    // time -> we need to lock, but we might already be locked, or not -> defer
+    // setting of parameters to a worker thread.
+    virtual void UpdateInt32(std::size_t libpidx, int val) override {
+      int drvpidx = parent_->libusr_.lib2ap(libpidx);
+      if (drvpidx >= 0) {
+        parent_->worker_.addTask([this, drvpidx, val](){
+          parent_->lock();
+          parent_->setIntegerParam(drvpidx, val);
+          parent_->callParamCallbacks();
+          parent_->unlock();
+        });
+      }
+    }
+    virtual void UpdateFloat64(std::size_t libpidx, double val) override {
+      int drvpidx = parent_->libusr_.lib2ap(libpidx);
+      if (drvpidx >= 0) {
+        parent_->worker_.addTask([this, drvpidx, val](){
+          parent_->lock();
+          parent_->setDoubleParam(drvpidx, val);
+          parent_->callParamCallbacks();
+          parent_->unlock();
+        });
+      }
+    }
+    virtual void UpdateString(std::size_t libpidx, const std::string& val) override
+    {
+      int drvpidx = parent_->libusr_.lib2ap(libpidx);
+      if (drvpidx >= 0) {
+        parent_->worker_.addTask([this, drvpidx, val](){
+          parent_->lock();
+          parent_->setStringParam(drvpidx, val.c_str());
+          parent_->callParamCallbacks();
+          parent_->unlock();
+        });
+      }
+    }
+  };
+  std::unique_ptr<ADUpdateConsumer> upd_cons_{new ADUpdateConsumer(this)};
+  libusr_.setUpdateConsumer(std::move(upd_cons_));
 
   /* the following parameters are supplied by the ADDriver base
    * class */
