@@ -95,6 +95,16 @@ int scdldapp_set_callback_enum(int user_id, void* priv, scdldapp_cb_enum cb)
   return user_call(user_id, &Glue<DLD>::set_callback_enum, priv, cb);
 }
 
+int scdldapp_set_callback_arr1d(int user_id, void* priv, scdldapp_cb_arr1d cb)
+{
+  return user_call(user_id, &Glue<DLD>::set_callback_arr1d, priv, cb);
+}
+
+int scdldapp_set_callback_arr2d(int user_id, void* priv, scdldapp_cb_arr2d cb)
+{
+  return user_call(user_id, &Glue<DLD>::set_callback_arr2d, priv, cb);
+}
+
 int scdldapp_create_user()
 {
   static const int MAX_USERS = 100;

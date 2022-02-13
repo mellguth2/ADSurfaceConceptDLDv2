@@ -3,6 +3,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "glue.hpp"
 #include "WorkerThread.hpp"
 
@@ -17,6 +18,7 @@ class DLD : public Glue<DLD>
   int image_mode_;
   int num_images_;
   int data_type_;
+  std::vector<unsigned> ratemeter_;
 public:
   DLD();
   int write_Initialize(int);

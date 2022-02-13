@@ -8,6 +8,7 @@ OUTFILE="../glue.hpp"
 import json
 from glueparts import code1, code2, code3
 
+# --- read/write functions, scalar types --------------------------------------
 def reg_fun(action, datatype):
   s = '    <A>_<DT>_funs.insert({<PIDX>, &T::<A>_<NAME>});\n'.replace(
     '<A>', action).replace('<DT>', datatype)
@@ -24,9 +25,10 @@ reg_rd = { 'enum'   : reg_fun('read', 'enum'),
            'int32'  : reg_fun('read', 'int'),
            'float64': reg_fun('read', 'float64') }
 
-def upd_fun(datatype, cpp_type):
-  s = '  void update_<NAME>(<C_ARG> v) { cb_<DT>.cb(cb_<DT>.priv, <PIDX>, v<MF>); }\n'
-  s = s.replace('<DT>', datatype).replace('<C_ARG>', cpp_type).replace(
+# --- update functions, scalar types ------------------------------------------
+def upd_fun(datatype, c_type):
+  s = '  void update_<NAME>(<C_TYPE> v) { cb_<DT>.cb(cb_<DT>.priv, <PIDX>, v<MF>); }\n'
+  s = s.replace('<DT>', datatype).replace('<C_TYPE>', c_type).replace(
     '<MF>', '.c_str()' if datatype == 'string' else '')
   def upd1(pidx, name):
     return s.replace('<PIDX>', str(pidx)).replace('<NAME>', name)
@@ -37,6 +39,30 @@ upd = { 'enum'  : upd_fun('enum', 'int'),
         'int32' : upd_fun('int32', 'int'),
         'float64' : upd_fun('float64', 'double') }
 
+# --- update function 1d array ------------------------------------------------
+element_data_type_to_ctype = {
+  'i8'  : 'char',
+  'u8'  : 'unsigned char',
+  'i16' : 'short',
+  'u16' : 'unsigned short',
+  'i32' : 'int',
+  'u32' : 'unsigned int',
+  'i64' : 'long long',
+  'u64' : 'unsigned long long',
+  'f32' : 'float',
+  'f64' : 'double'
+}
+
+def upd_fun_arr1d(elem_datatype):
+  c_type = element_data_type_to_ctype[elem_datatype]
+  s = '  void update_<NAME>(size_t nr_elem, <C_TYPE>* data) { \n    ' \
+      'cb_arr1d.cb(cb_arr1d.priv, <PIDX>, nr_elem*sizeof(<C_TYPE>), data); }\n'
+  s = s.replace('<C_TYPE>', c_type)
+  def upd(pidx, name):
+    return s.replace('<PIDX>', str(pidx)).replace('<NAME>', name)
+  return upd
+
+# -----------------------------------------------------------------------------
 def generate_glue(infile, outfile):
   with open(infile, "r") as f_in:
     parameters = json.load(f_in)
@@ -48,6 +74,8 @@ def generate_glue(infile, outfile):
       for param in parameters:
         if param['node'] != 'parameter':
           continue
+        if param['data type'] in ('array1d', 'array2d'):
+          continue # no read/write funcs for arrays, yet.
         if not param['read-only']:
           f_out.write(reg_wr[param['data type']](pidx, param['name']))
         f_out.write(reg_rd[param['data type']](pidx, param['name']))
@@ -59,7 +87,10 @@ def generate_glue(infile, outfile):
       for param in parameters:
         if param['node'] != 'parameter':
           continue
-        f_out.write(upd[param['data type']](pidx, param['name']))
+        if param['data type'] == 'array1d':
+          f_out.write(upd_fun_arr1d(param['element data type'])(pidx, param['name']))
+        else:
+          f_out.write(upd[param['data type']](pidx, param['name']))
         pidx += 1
       # -----------
       f_out.write(code3)

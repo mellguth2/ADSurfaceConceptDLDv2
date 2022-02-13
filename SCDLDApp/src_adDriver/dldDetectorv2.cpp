@@ -27,6 +27,7 @@
 #include "dldApp.h"
 #include "DldAppLibParams.hpp"
 #include <sstream>
+#include <iostream>
 
 static const char *driverName = "dldDetectorv2";
 static std::vector< std::unique_ptr<dldDetectorv2> > g_instances_;
@@ -246,6 +247,8 @@ dldDetectorv2::dldDetectorv2(
   int status = asynSuccess;
   const char *functionName = "dldDetectorv2";
 
+  // create all parameters that are defined by the library if they have an
+  // entry in our database of EPICS records ("dldDetectorv2.template")
   libusr_.createParams(
     [this](const char* name, asynParamType aptype, int* apidx) {
       return createParam(name, aptype, apidx);
@@ -261,8 +264,19 @@ dldDetectorv2::dldDetectorv2(
 
   class ADUpdateConsumer : public DldApp::UpdateConsumer {
     dldDetectorv2* parent_;
+    /*
+    std::unordered_map<size_t, int> to_ndarray; // maps indices from lib parameter to NDArray
+    */
   public:
-    ADUpdateConsumer(dldDetectorv2* parent) : parent_(parent) {}
+    ADUpdateConsumer(dldDetectorv2* parent) : parent_(parent) {
+      /* // future support for images
+      auto ins = [&](const std::string& s, int i) {
+        to_ndarray[DldApp::Lib::instance().idxFromParamName(s)] = i;
+      };
+      ins("LiveImage", 0);
+      */
+    }
+    ~ADUpdateConsumer() {}
     // updates may be issued by the library synchronously in the course of
     // processing a write-parameter-request or spontaneously at any point in
     // time -> we need to lock, but we might already be locked, or not -> defer
@@ -301,6 +315,13 @@ dldDetectorv2::dldDetectorv2(
         });
       }
     }
+    virtual void UpdateArray1D(
+      std::size_t libpidx, std::size_t bytelen, void* data) override
+    { } // TODO support for arrays
+    virtual void UpdateArray2D(
+      std::size_t libpidx, std::size_t bytelen, std::size_t width,
+      void* data) override
+    { } // TODO support for images
   };
   std::unique_ptr<ADUpdateConsumer> upd_cons_{new ADUpdateConsumer(this)};
   libusr_.setUpdateConsumer(std::move(upd_cons_));

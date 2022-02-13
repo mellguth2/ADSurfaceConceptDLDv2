@@ -109,6 +109,8 @@ LibUser::LibUser()
   scdldapp_set_callback_int32(user_id_, this, static_cb_int32);
   scdldapp_set_callback_float64(user_id_, this, static_cb_float64);
   scdldapp_set_callback_string(user_id_, this, static_cb_string);
+  scdldapp_set_callback_arr1d(user_id_, this, static_cb_arr1d);
+  scdldapp_set_callback_arr2d(user_id_, this, static_cb_arr2d);
 }
 
 LibUser::~LibUser()
@@ -125,6 +127,8 @@ int LibUser::createParams(
     m[DATATYPE_INT32] = asynParamInt32;
     m[DATATYPE_FLOAT64] = asynParamFloat64;
     m[DATATYPE_STRING] = asynParamOctet;
+    m[DATATYPE_ARRAY1D] = asynParamGenericPointer;
+    m[DATATYPE_ARRAY2D] = asynParamGenericPointer;
   }
   auto& dld_params = Lib::instance().params();
   for (std::size_t i = 0; i < dld_params.size(); i++) {
@@ -403,6 +407,20 @@ void LibUser::cb_enum(size_t pidx, int val)
   }
 }
 
+void LibUser::cb_arr1d(size_t pidx, size_t bytelen, void* data)
+{
+  if (update_consumer_) {
+    update_consumer_->UpdateArray1D(pidx, bytelen, data);
+  }
+}
+
+void LibUser::cb_arr2d(size_t pidx, size_t bytelen, size_t width, void* data)
+{
+  if (update_consumer_) {
+    update_consumer_->UpdateArray2D(pidx, bytelen, width, data);
+  }
+}
+
 void LibUser::static_cb_int32(void* priv, size_t pidx, int val)
 {
   reinterpret_cast<LibUser*>(priv)->cb_int32(pidx, val);
@@ -421,6 +439,16 @@ void LibUser::static_cb_string(void* priv, size_t pidx, const char* val)
 void LibUser::static_cb_enum(void* priv, size_t pidx, int val)
 {
   reinterpret_cast<LibUser*>(priv)->cb_enum(pidx, val);
+}
+
+void LibUser::static_cb_arr1d(void* priv, size_t pidx, size_t bytelen, void* d)
+{
+  reinterpret_cast<LibUser*>(priv)->cb_arr1d(pidx, bytelen, d);
+}
+
+void LibUser::static_cb_arr2d(void* priv, size_t pidx, size_t bytelen, size_t width, void* d)
+{
+  reinterpret_cast<LibUser*>(priv)->cb_arr2d(pidx, bytelen, width, d);
 }
 
 int LibUser::firstDriverParamIdx() const
@@ -455,8 +483,3 @@ const Param &LibUser::libParam(int asynport_param_idx) const
 {
   return Lib::instance().params().at(ap2lib(asynport_param_idx));
 }
-
-
-
-
-

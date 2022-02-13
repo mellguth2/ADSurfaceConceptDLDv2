@@ -29,6 +29,9 @@ typedef void (*scdldapp_cb_int32)(void*, size_t, int);
 typedef void (*scdldapp_cb_float64)(void*, size_t, double);
 typedef void (*scdldapp_cb_string)(void*, size_t, const char*);
 typedef void (*scdldapp_cb_enum)(void*, size_t, int);
+typedef void (*scdldapp_cb_arr1d)(void*, size_t, size_t arr_len_in_bytes, void* data);
+typedef void (*scdldapp_cb_arr2d)(void*, size_t, size_t arr_len_in_bytes,
+                                  size_t width, void* data);
 
 /**
  * @brief create a user which is required in all other functions
@@ -63,6 +66,8 @@ LIBDLDAPP_PUBLIC int scdldapp_set_callback_int32(int user_id, void* priv, scdlda
 LIBDLDAPP_PUBLIC int scdldapp_set_callback_float64(int user_id, void* priv, scdldapp_cb_float64 cb);
 LIBDLDAPP_PUBLIC int scdldapp_set_callback_string(int user_id, void* priv, scdldapp_cb_string cb);
 LIBDLDAPP_PUBLIC int scdldapp_set_callback_enum(int user_id, void* priv, scdldapp_cb_enum cb);
+LIBDLDAPP_PUBLIC int scdldapp_set_callback_arr1d(int user_id, void* priv, scdldapp_cb_arr1d cb);
+LIBDLDAPP_PUBLIC int scdldapp_set_callback_arr2d(int user_id, void* priv, scdldapp_cb_arr2d cb);
 
 LIBDLDAPP_PUBLIC const char* scdldapp_get_param_config_json();
 LIBDLDAPP_PUBLIC void scdldapp_get_version(int* ver_maj, int* ver_min, int* ver_pat);

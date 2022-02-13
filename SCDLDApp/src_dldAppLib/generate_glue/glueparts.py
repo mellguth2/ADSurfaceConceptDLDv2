@@ -27,6 +27,9 @@ class Glue
   typedef void (*cb_float64_t)(void*, size_t, double);
   typedef void (*cb_string_t)(void*, size_t, const char*);
   typedef void (*cb_enum_t)(void*, size_t, int);
+  typedef void (*cb_arr1d_t)(void*, size_t, size_t arr_len_in_bytes, void* data);
+  typedef void (*cb_arr2d_t)(void*, size_t, size_t arr_len_in_bytes,
+                                    size_t width, void* data);
   template <typename CBType>
   struct RegCallback
   {
@@ -40,6 +43,8 @@ class Glue
   RegCallback<cb_float64_t> cb_float64;
   RegCallback<cb_string_t> cb_string;
   RegCallback<cb_enum_t> cb_enum;
+  RegCallback<cb_arr1d_t> cb_arr1d;
+  RegCallback<cb_arr2d_t> cb_arr2d;
   // define member function signatures for the T class
   typedef int (T::*write_int_member_fun_t) (int);
   typedef int (T::*write_float64_member_fun_t) (double);
@@ -139,6 +144,8 @@ code2 = \
   int set_callback_float64(void* priv, cb_float64_t cb) { cb_float64.set(priv, cb); return 0; }
   int set_callback_string(void* priv, cb_string_t cb) { cb_string.set(priv, cb); return 0; }
   int set_callback_enum(void* priv, cb_enum_t cb) { cb_enum.set(priv, cb); return 0; }
+  int set_callback_arr1d(void* priv, cb_arr1d_t cb) { cb_arr1d.set(priv, cb); return 0; }
+  int set_callback_arr2d(void* priv, cb_arr2d_t cb) { cb_arr2d.set(priv, cb); return 0; }
 """
 
 code3 = \

@@ -143,5 +143,20 @@
     "epicsprops":{
       "asynportname":""
     }
+  },
+  {
+    "node":"parameter",
+    "name":"Ratemeter",
+    "display name":"rate meter",
+    "description":"Displays rates of individual TDC channels and combined DLD events",
+    "data type":"array1d",
+    "element data type":"u32",
+    "maxlen":70,
+    "read-only":true,
+    "default":"",
+    "unit":"events/sec",
+    "epicsprops":{
+      "asynportname":""
+    }
   }
 ]

@@ -31,7 +31,7 @@ int DLD::write_Initialize(int v)
       }
       else {
         initialized_ = 1;
-        update_Initialize(1);
+        update_Initialize(initialized_);
         update_StatusMessage("hardware ready");
       }
     });
@@ -40,7 +40,7 @@ int DLD::write_Initialize(int v)
     worker_.addTask( [this]() {
       sc_tdc_deinit2(dev_desc_);
       initialized_ = 0;
-      update_Initialize(0);
+      update_Initialize(initialized_);
       update_StatusMessage("hardware closed");
     });
   }
@@ -56,7 +56,6 @@ int DLD::read_Initialize(int *v)
 int DLD::write_ConfigFile(const std::string& v)
 {
   configfile_ = v;
-  update_ConfigFile(configfile_);
   return 0;
 }
 
@@ -75,7 +74,6 @@ int DLD::read_StatusMessage(std::string &dest)
 int DLD::write_Exposure(double v)
 {
   exposure_ = v;
-  update_Exposure(v);
   return 0;
 }
 
@@ -93,7 +91,6 @@ int DLD::write_Acquire(int v)
       sc_tdc_start_measure2(dev_desc_, static_cast<int>(exposure_ * 1000.0));
     if (ret == 0) {
       acquire_ = 1;
-      update_Acquire(1);
     }
     return ret;
   }
@@ -167,8 +164,10 @@ void DLD::cb_measurement_complete(int reason)
 #endif
   static const int EARLY_NOTIF = 4;
   if (reason != EARLY_NOTIF) {
-    acquire_ = 0;
-    update_Acquire(0);
+    worker_.addTask([&]() {
+      acquire_ = 0;
+      update_Acquire(0);
+    });
   }
 }
 
