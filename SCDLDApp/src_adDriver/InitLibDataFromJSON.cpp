@@ -1,7 +1,7 @@
 #include "InitLibDataFromJSON.hpp"
 #include <string>
 #include "nlohmann/json.hpp"
-#include "DldAppLibParams.hpp"
+#include "DldAppLibUser.hpp"
 #include "dldApp.h"
 #include <sstream>
 

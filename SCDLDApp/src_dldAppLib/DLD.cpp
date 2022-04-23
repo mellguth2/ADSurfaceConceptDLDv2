@@ -6,20 +6,23 @@
 
 DLD::DLD()
   : Glue(this),
-    configfile_("tdc_gpx3.ini"),
-    initialized_(0),
-    dev_desc_(-1),
-    exposure_(1.0),
-    acquire_(0),
-    image_mode_(0),
-    num_images_(1)
+    dev_desc_(-1)
 {
-
+  configure_pipes();
 }
+
+DLD::Data::Data()
+  : configfile("tdc_gpx3.ini"),
+    initialized(0),
+    exposure(1.0),
+    acquire(0),
+    image_mode(0),
+    num_images(1)
+{ }
 
 int DLD::write_Initialize(int v)
 {
-  if (initialized_ == 0 && v == 1) {
+  if (data_.initialized == 0 && v == 1) {
     worker_.addTask( [this]() {
       update_StatusMessage("hardware initializing...");
       int ret = init_impl(); // this step can take seconds for some devices
@@ -30,17 +33,20 @@ int DLD::write_Initialize(int v)
         update_StatusMessage(buf);
       }
       else {
-        initialized_ = 1;
-        update_Initialize(initialized_);
+        data_.initialized = 1;
+        update_Initialize(data_.initialized);
         update_StatusMessage("hardware ready");
+        for (auto& createdAtInit : created_at_init_) {
+          createdAtInit->create(dev_desc_);
+        }
       }
     });
   }
-  else if (initialized_ == 1 && v == 0 && dev_desc_ >= 0) {
+  else if (data_.initialized == 1 && v == 0 && dev_desc_ >= 0) {
     worker_.addTask( [this]() {
       sc_tdc_deinit2(dev_desc_);
-      initialized_ = 0;
-      update_Initialize(initialized_);
+      data_.initialized = 0;
+      update_Initialize(data_.initialized);
       update_StatusMessage("hardware closed");
     });
   }
@@ -49,52 +55,55 @@ int DLD::write_Initialize(int v)
 
 int DLD::read_Initialize(int *v)
 {
-  *v = initialized_;
+  *v = data_.initialized;
   return 0;
 }
 
 int DLD::write_ConfigFile(const std::string& v)
 {
-  configfile_ = v;
+  data_.configfile = v;
   return 0;
 }
 
 int DLD::read_ConfigFile(std::string& dest)
 {
-  dest = configfile_;
+  dest = data_.configfile;
   return 0;
 }
 
 int DLD::read_StatusMessage(std::string &dest)
 {
-  dest = statusmessage_;
+  dest = data_.statusmessage;
   return 0;
 }
 
 int DLD::write_Exposure(double v)
 {
-  exposure_ = v;
+  data_.exposure = v;
   return 0;
 }
 
 int DLD::read_Exposure(double *dest)
 {
-  *dest = exposure_;
+  *dest = data_.exposure;
   return 0;
 }
 
 int DLD::write_Acquire(int v)
 {
-  if (acquire_ == 0 && v == 1 && initialized_ == 1) {
+  if (data_.acquire == 0 && v == 1 && data_.initialized == 1) {
+    auto time_ms = static_cast<int>(data_.exposure * 1000.0);
+    for (auto& som_listener : som_listeners_) {
+      som_listener->start_of_measurement(time_ms);
+    }
     // start acquisition
-    int ret =
-      sc_tdc_start_measure2(dev_desc_, static_cast<int>(exposure_ * 1000.0));
+    int ret = sc_tdc_start_measure2(dev_desc_, time_ms);
     if (ret == 0) {
-      acquire_ = 1;
+      data_.acquire = 1;
     }
     return ret;
   }
-  else if (acquire_ == 1 && v == 0 && initialized_ == 1) {
+  else if (data_.acquire == 1 && v == 0 && data_.initialized == 1) {
     // interrupt acquisition
     sc_tdc_interrupt2(dev_desc_); // asynchronous, do not update_Acquire yet
     return 0;
@@ -104,55 +113,70 @@ int DLD::write_Acquire(int v)
 
 int DLD::read_Acquire(int *dest)
 {
-  *dest = acquire_;
+  *dest = data_.acquire;
   return 0;
 }
 
 int DLD::write_ImageMode(int v)
 {
-  image_mode_ = v;
+  data_.image_mode = v;
   return 0;
 }
 
 int DLD::read_ImageMode(int *dest)
 {
-  *dest = image_mode_;
+  *dest = data_.image_mode;
   return 0;
 }
 
 int DLD::write_NumImages(int v)
 {
-  num_images_ = v;
+  data_.num_images = v;
   return 0;
 }
 
 int DLD::read_NumImages(int *dest)
 {
-  *dest = num_images_;
+  *dest = data_.num_images;
   return 0;
 }
 
 int DLD::write_DataType(int v)
 {
-  data_type_ = v;
+  data_.data_type = v;
   return 0;
 }
 
 int DLD::read_DataType(int *dest)
 {
-  *dest = data_type_;
+  *dest = data_.data_type;
   return 0;
 }
 
 int DLD::init_impl()
 {
-  int ret = sc_tdc_init_inifile(configfile_.c_str());
+  int ret = sc_tdc_init_inifile(data_.configfile.c_str());
   if (ret == 0) {
     dev_desc_ = ret;
     sc_tdc_set_complete_callback2(
       dev_desc_, this, cb_static_measurement_complete);
   }
   return ret;
+}
+
+void DLD::configure_pipes()
+{
+  configure_pipes_ratemeter();
+}
+
+void DLD::configure_pipes_ratemeter()
+{
+  ratemeter_.setDataConsumer([this](int* data, std::size_t length){
+    update_Ratemeter(length, data);
+  });
+  created_at_init_.push_back(&ratemeter_);
+  som_listeners_.push_back(&ratemeter_);
+  eom_listeners_.push_back(&ratemeter_);
 }
 
 void DLD::cb_measurement_complete(int reason)
@@ -164,8 +188,12 @@ void DLD::cb_measurement_complete(int reason)
 #endif
   static const int EARLY_NOTIF = 4;
   if (reason != EARLY_NOTIF) {
+
     worker_.addTask([&]() {
-      acquire_ = 0;
+      for (auto& eom_listener : eom_listeners_) {
+        eom_listener->end_of_measurement();
+      }
+      data_.acquire = 0;
       update_Acquire(0);
     });
   }

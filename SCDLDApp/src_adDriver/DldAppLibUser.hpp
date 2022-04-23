@@ -8,105 +8,11 @@
 #include <functional>
 #include <asynParamType.h>
 #include "InitLibDataFromJSON.hpp"
-
-#define DLDAPPLIB_NOT_MY_PARAM    -820000
-#define DLDAPPLIB_WRONG_DATATYPE  -820001
-#define DLDAPPLIB_NOT_IMPLEMENTED -820002
+#include "UpdateConsumer.hpp"
+#include "DldAppLib.hpp"
 
 namespace DldApp
 {
-enum DatatypeEnum {
-  DATATYPE_INVALID = 0,
-  DATATYPE_ENUM = 1,
-  DATATYPE_INT32 = 2,
-  DATATYPE_FLOAT64 = 3,
-  DATATYPE_STRING = 4,
-  DATATYPE_ARRAY1D = 5,
-  DATATYPE_ARRAY2D = 6
-};
-enum ElementDatatypeEnum {
-  ELEMTYPE_INVALID = 0,
-  ELEMTYPE_U8 = 0x01,   // unsigned integer
-  ELEMTYPE_I8 = 0x11,   // signed integer
-  ELEMTYPE_U16 = 0x02,
-  ELEMTYPE_I16 = 0x12,
-  ELEMTYPE_U32 = 0x03,
-  ELEMTYPE_I32 = 0x13,
-  ELEMTYPE_U64 = 0x04,
-  ELEMTYPE_I64 = 0x14,
-  ELEMTYPE_F32 = 0x23,  // C float
-  ELEMTYPE_F64 = 0x24   // C double
-};
-inline size_t elementSize(ElementDatatypeEnum e) {
-  if (e == ELEMTYPE_INVALID)
-    return 0;
-  else
-    return (1u << ((static_cast<unsigned>(e) & 0x7) - 1));
-}
-
-struct ArrayParam {
-  ArrayParam(ElementDatatypeEnum e, std::size_t l)
-    : elemtype(e), maxlength(l) {}
-  ElementDatatypeEnum elemtype;  // C type for the elements of the array
-  std::size_t maxlength;
-};
-
-struct Param {
-  DatatypeEnum lib_type;  // data type in application library
-  std::string drv_name;   // parameter name in the INP/OUT fields of
-                          // dldDetectorv2.template, empty string if not ours
-  asynParamType drv_type = asynParamNotDefined; // for manual linking of parameters, only
-  std::unique_ptr<ArrayParam> arr_cfg;
-  Param(
-    DatatypeEnum lib_type_arg,
-    const std::string& drv_name_arg = "")
-    : lib_type(lib_type_arg),
-      drv_name(drv_name_arg)
-  { }
-};
-
-class Lib // I'm a singleton
-{
-  friend class LibUser;
-  friend int init_libdata_from_json(Lib&);
-  /* private data */
-  std::vector<Param> params_; // index of vector = library parameter index
-  std::vector<ArrayParam> array_params_;
-  std::unordered_map<std::string, std::size_t> name2libidx_;
-  int nr_driver_params_;
-  /* private functions */
-  std::vector<Param>& params();
-
-public:
-
-  int numberDrvParams() const;
-  bool hasParamName(const std::string&) const;
-  std::size_t idxFromParamName(const std::string&) const;
-
-  /**
-   * @brief (1) set the asynParamType for a library parameter and (2) call
-   * a function with the library parameter index, (1) and (2) only happen,
-   * if the parameter exists.
-   * @return 0 on success, else DLDAPPLIB_NOT_MY_PARAM
-   */
-  int configureParam(const std::string&, asynParamType, std::function<void(size_t)>);
-  static Lib& instance();
-private:
-  Lib();
-  Lib(Lib const&) = delete;
-  void operator=(Lib const&) = delete;
-};
-
-class UpdateConsumer
-{
-public:
-  virtual ~UpdateConsumer() {}
-  virtual void UpdateInt32(std::size_t libpidx, int) = 0;
-  virtual void UpdateFloat64(std::size_t libpidx, double) = 0;
-  virtual void UpdateString(std::size_t libpidx, const std::string&) = 0;
-  virtual void UpdateArray1D(std::size_t libpidx, std::size_t bytelen, void* data) = 0;
-  virtual void UpdateArray2D(std::size_t libpidx, std::size_t bytelen, std::size_t width, void* data) = 0;
-};
 
 /**
  * @brief objects of this class should be made members of the asynPortDriver
@@ -169,7 +75,6 @@ public:
   std::string paramName(int asynport_param_idx) const;
   DatatypeEnum libdatatype(int asynport_param_idx) const;
   const Param& libParam(int asynport_param_idx) const;
-
 
 private:
   int readStrImpl(int libparidx, std::function<void(const std::string&)>);

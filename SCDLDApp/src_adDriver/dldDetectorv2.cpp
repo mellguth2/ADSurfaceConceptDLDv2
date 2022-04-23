@@ -25,7 +25,9 @@
 #include <epicsExport.h>
 #include "dldDetectorv2.h"
 #include "dldApp.h"
-#include "DldAppLibParams.hpp"
+#include "DldAppLibUser.hpp"
+#include "ADUpdateConsumer.hpp"
+#include "CachedArrays.hpp"
 #include <sstream>
 #include <iostream>
 
@@ -188,6 +190,106 @@ asynStatus dldDetectorv2::writeOctet(
   return status;
 }
 
+asynStatus dldDetectorv2::readInt8Array(
+  asynUser* pasynUser, epicsInt8* value, size_t nElements, size_t* nIn)
+{
+  const int param_idx = pasynUser->reason;
+  auto data_found = arrays_->getArray1D(
+    param_idx,
+    asynParamInt8Array,
+    [this, value, nElements, nIn](void* data, std::size_t bytelen) {
+      auto elements_to_copy = std::min(bytelen/sizeof(char), nElements);
+      *nIn = elements_to_copy;
+      memcpy(value, data, elements_to_copy * sizeof(char));
+    }
+  );
+  if (data_found) {
+    return asynSuccess;
+  }
+  *nIn = 0; // no data, return empty array
+  return asynSuccess;
+}
+
+asynStatus dldDetectorv2::readInt16Array(
+  asynUser* pasynUser, epicsInt16* value, size_t nElements, size_t* nIn)
+{
+  const int param_idx = pasynUser->reason;
+  auto data_found = arrays_->getArray1D(
+    param_idx,
+    asynParamInt16Array,
+    [this, value, nElements, nIn](void* data, std::size_t bytelen) {
+      auto elements_to_copy = std::min(bytelen/sizeof(short), nElements);
+      *nIn = elements_to_copy;
+      memcpy(value, data, elements_to_copy * sizeof(short));
+    }
+  );
+  if (data_found) {
+    return asynSuccess;
+  }
+  *nIn = 0; // no data, return empty array
+  return asynSuccess;
+}
+
+asynStatus dldDetectorv2::readInt32Array(
+  asynUser* pasynUser, epicsInt32* value, size_t nElements, size_t* nIn)
+{
+  const int param_idx = pasynUser->reason;
+  auto data_found = arrays_->getArray1D(
+    param_idx,
+    asynParamInt32Array,
+    [this, value, nElements, nIn](void* data, std::size_t bytelen) {
+      auto elements_to_copy = std::min(bytelen/sizeof(int), nElements);
+      *nIn = elements_to_copy;
+      memcpy(value, data, elements_to_copy * sizeof(int));
+    }
+  );
+  if (data_found) {
+    return asynSuccess;
+  }
+  *nIn = 0; // no data, return empty array
+  return asynSuccess;
+}
+
+asynStatus dldDetectorv2::readFloat32Array(
+  asynUser* pasynUser, epicsFloat32* value, size_t nElements, size_t* nIn)
+{
+  const int param_idx = pasynUser->reason;
+  auto data_found = arrays_->getArray1D(
+    param_idx,
+    asynParamFloat32Array,
+    [this, value, nElements, nIn](void* data, std::size_t bytelen) {
+      auto elements_to_copy = std::min(bytelen/sizeof(float), nElements);
+      *nIn = elements_to_copy;
+      memcpy(value, data, elements_to_copy * sizeof(float));
+    }
+  );
+  if (data_found) {
+    return asynSuccess;
+  }
+  *nIn = 0; // no data, return empty array
+  return asynSuccess;
+}
+
+asynStatus dldDetectorv2::readFloat64Array(
+  asynUser* pasynUser, epicsFloat64* value, size_t nElements, size_t* nIn)
+{
+  const int param_idx = pasynUser->reason;
+  auto data_found = arrays_->getArray1D(
+    param_idx,
+    asynParamFloat64Array,
+    [this, value, nElements, nIn](void* data, std::size_t bytelen) {
+      auto elements_to_copy = std::min(bytelen/sizeof(double), nElements);
+      *nIn = elements_to_copy;
+      memcpy(value, data, elements_to_copy * sizeof(double));
+    }
+  );
+  if (data_found) {
+    return asynSuccess;
+  }
+  *nIn = 0; // no data, return empty array
+  return asynSuccess;
+}
+
 
 /** Report status of the driver.
   * Prints details about the driver if details>0.
@@ -262,68 +364,8 @@ dldDetectorv2::dldDetectorv2(
   libusr_.linkParam(ADAcquireTime, asynParamFloat64, "Exposure");
   libusr_.linkParam(ADStatusMessage, asynParamOctet, "StatusMessage");
 
-  class ADUpdateConsumer : public DldApp::UpdateConsumer {
-    dldDetectorv2* parent_;
-    /*
-    std::unordered_map<size_t, int> to_ndarray; // maps indices from lib parameter to NDArray
-    */
-  public:
-    ADUpdateConsumer(dldDetectorv2* parent) : parent_(parent) {
-      /* // future support for images
-      auto ins = [&](const std::string& s, int i) {
-        to_ndarray[DldApp::Lib::instance().idxFromParamName(s)] = i;
-      };
-      ins("LiveImage", 0);
-      */
-    }
-    ~ADUpdateConsumer() {}
-    // updates may be issued by the library synchronously in the course of
-    // processing a write-parameter-request or spontaneously at any point in
-    // time -> we need to lock, but we might already be locked, or not -> defer
-    // setting of parameters to a worker thread.
-    virtual void UpdateInt32(std::size_t libpidx, int val) override {
-      int drvpidx = parent_->libusr_.lib2ap(libpidx);
-      if (drvpidx >= 0) {
-        parent_->worker_.addTask([this, drvpidx, val](){
-          parent_->lock();
-          parent_->setIntegerParam(drvpidx, val);
-          parent_->callParamCallbacks();
-          parent_->unlock();
-        });
-      }
-    }
-    virtual void UpdateFloat64(std::size_t libpidx, double val) override {
-      int drvpidx = parent_->libusr_.lib2ap(libpidx);
-      if (drvpidx >= 0) {
-        parent_->worker_.addTask([this, drvpidx, val](){
-          parent_->lock();
-          parent_->setDoubleParam(drvpidx, val);
-          parent_->callParamCallbacks();
-          parent_->unlock();
-        });
-      }
-    }
-    virtual void UpdateString(std::size_t libpidx, const std::string& val) override
-    {
-      int drvpidx = parent_->libusr_.lib2ap(libpidx);
-      if (drvpidx >= 0) {
-        parent_->worker_.addTask([this, drvpidx, val](){
-          parent_->lock();
-          parent_->setStringParam(drvpidx, val.c_str());
-          parent_->callParamCallbacks();
-          parent_->unlock();
-        });
-      }
-    }
-    virtual void UpdateArray1D(
-      std::size_t libpidx, std::size_t bytelen, void* data) override
-    { } // TODO support for arrays
-    virtual void UpdateArray2D(
-      std::size_t libpidx, std::size_t bytelen, std::size_t width,
-      void* data) override
-    { } // TODO support for images
-  };
   std::unique_ptr<ADUpdateConsumer> upd_cons_{new ADUpdateConsumer(this)};
+  arrays_ = &(upd_cons_->arrays());
   libusr_.setUpdateConsumer(std::move(upd_cons_));
 
   /* the following parameters are supplied by the ADDriver base

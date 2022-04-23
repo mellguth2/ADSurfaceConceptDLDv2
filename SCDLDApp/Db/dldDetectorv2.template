@@ -62,3 +62,14 @@ record(waveform, "$(P)$(R)ConfigFile")
     field(NELM, "2048")
     info(autosaveFields, "VAL")
 }
+
+record(waveform, "$(P)$(R)Ratemeter")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32ArrayIn")
+    field(DESC, "Displays rates of individual")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_RATEMETER")
+    field(FTVL, "LONG")
+    field(NELM, "70")
+    field(SCAN, "I/O Intr")
+}

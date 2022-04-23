@@ -61,8 +61,6 @@ public:
     cb_float64.cb = [](void*, size_t, double) { };
     cb_string.cb = [](void*, size_t, const char*) { };
     cb_enum.cb = [](void*, size_t, int) { };
-    cb_arr1d.cb = [](void*, size_t, size_t, void*) { };
-    cb_arr2d.cb = [](void*, size_t, size_t, size_t, void*) { };
     /* ---------- */
     write_enum_funs.insert({0, &T::write_Initialize});
     read_enum_funs.insert({0, &T::read_Initialize});
@@ -161,7 +159,7 @@ public:
   void update_ImageMode(int v) { cb_enum.cb(cb_enum.priv, 5, v); }
   void update_NumImages(int v) { cb_int32.cb(cb_int32.priv, 6, v); }
   void update_DataType(int v) { cb_enum.cb(cb_enum.priv, 7, v); }
-  void update_Ratemeter(size_t nr_elem, unsigned int* data) { 
-    cb_arr1d.cb(cb_arr1d.priv, 8, nr_elem*sizeof(unsigned int), data); }
+  void update_Ratemeter(size_t nr_elem, int* data) { 
+    cb_arr1d.cb(cb_arr1d.priv, 8, nr_elem*sizeof(int), data); }
 
 };

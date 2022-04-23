@@ -199,3 +199,48 @@ def db_gen_string(name, asynportname, out=False, defaultval=None,
     '<APNAME>',    asynportname              ).replace(
     '<DESC>',      gen_desc_str(description) ).replace(
     '<MAXLENGTH>', str(maxlength)            )
+
+# ----------------------------------------------------------------------------
+#                                 array 1D
+# ----------------------------------------------------------------------------
+
+DB_GEN_ARRAY1D_IN = \
+"""
+record(waveform, "$(P)$(R)<NAME>")
+{
+    field(PINI, "YES")
+    field(DTYP, "asyn<ELEMTYPE>ArrayIn")<DESC>
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))<APNAME>")
+    field(FTVL, "<FTVL>")
+    field(NELM, "<MAXLENGTH>")
+    field(SCAN, "I/O Intr")
+}
+"""
+
+DB_ARRAY1D_ELEMTYPE_MAPPINGS = {
+  'i8' :  ['Int8',    'CHAR'  ],
+  'u8' :  ['Int16',   'SHORT' ], # needs conversion during updates
+  'i16' : ['Int16',   'SHORT' ],
+  'u16' : ['Int32',   'LONG'  ],  # needs conversion during updates
+  'i32' : ['Int32',   'LONG'  ],
+  'u32' : ['Float64', 'DOUBLE'],  # needs conversion during updates
+  'i64' : ['Float64', 'DOUBLE'],  # needs conversion during updates
+  'u64' : ['Float64', 'DOUBLE'],  # needs conversion during updates
+  'f32' : ['Float32', 'FLOAT' ],
+  'f64' : ['Float64', 'DOUBLE']
+}
+
+def db_gen_array1d(name, asynportname, out=False, defaultval=None,
+                   description=None, maxlength=2048, elementtype='f64'):
+  if out:
+    raise RuntimeError("db_gen_array1d: parameter {}: writeable arrays are not "
+                       "supported".format(name))
+  asyn_elemtype = DB_ARRAY1D_ELEMTYPE_MAPPINGS[elementtype][0]
+  ftvl = DB_ARRAY1D_ELEMTYPE_MAPPINGS[elementtype][1]
+  return DB_GEN_ARRAY1D_IN.replace(
+    '<NAME>',      name                      ).replace(
+    '<APNAME>',    asynportname              ).replace(
+    '<DESC>',      gen_desc_str(description) ).replace(
+    '<MAXLENGTH>', str(maxlength)            ).replace(
+    '<ELEMTYPE>',  asyn_elemtype             ).replace(
+    '<FTVL>',      ftvl                      )

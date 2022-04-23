@@ -6,19 +6,22 @@
 #include <vector>
 #include "glue.hpp"
 #include "WorkerThread.hpp"
+#include "PipeRatemeter.hpp"
 
 class DLD : public Glue<DLD>
 {
-  std::string configfile_;
-  std::string statusmessage_;
-  int initialized_;
-  int dev_desc_;
-  double exposure_;
-  int acquire_;
-  int image_mode_;
-  int num_images_;
-  int data_type_;
-  std::vector<unsigned> ratemeter_;
+  struct Data {
+    std::string configfile;
+    std::string statusmessage;
+    int initialized;
+    double exposure;
+    int acquire;
+    int image_mode;
+    int num_images;
+    int data_type;
+    std::vector<unsigned> ratemeter;
+    Data();
+  } data_;
 public:
   DLD();
   int write_Initialize(int);
@@ -37,10 +40,18 @@ public:
   int write_DataType(int);
   int read_DataType(int*);
 
-
 private:
+  // functions
   int init_impl();
+  void configure_pipes();
+  void configure_pipes_ratemeter();
   void cb_measurement_complete(int reason);
   static void cb_static_measurement_complete(void* priv, int reason);
+  // variables
+  int dev_desc_;
   WorkerThread worker_;
+  PipeRatemeter ratemeter_;
+  std::vector<iCreatedAtInit*> created_at_init_;
+  std::vector<iEndOfMeasListener*> eom_listeners_;
+  std::vector<iStartOfMeasListener*> som_listeners_;
 };
