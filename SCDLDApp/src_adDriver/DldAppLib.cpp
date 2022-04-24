@@ -3,7 +3,7 @@
 using namespace DldApp;
 
 Lib::Lib()
-  : nr_driver_params_(0)
+  : nr_driver_params_(0), nr_array2d_params_(0)
 {
   // create the in-memory parameter configuration from a json config string
   // that is queried from the library (scdldapp_get_param_config_json())
@@ -42,6 +42,11 @@ Lib::Lib()
 int Lib::numberDrvParams() const
 {
   return nr_driver_params_;
+}
+
+int Lib::numberArray2dParams() const
+{
+  return nr_array2d_params_;
 }
 
 bool Lib::hasParamName(const std::string& name) const

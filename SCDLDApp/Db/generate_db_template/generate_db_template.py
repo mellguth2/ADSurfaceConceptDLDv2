@@ -37,6 +37,8 @@ def generate_template(infile, outfile):
           if len(asynportname) == 0:
             continue
           datatype = param['data type']
+          if datatype == 'array2d':
+            continue
           # step 1 : select function for db record string generation
           f = db_gen_fdict[datatype]
           # step 2 : collect arguments to this function in f_args and f_kwargs

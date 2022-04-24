@@ -23,11 +23,13 @@ class Lib // I'm a singleton
   std::vector<Param> params_; // index of vector = library parameter index
   std::unordered_map<std::string, std::size_t> name2libidx_;
   int nr_driver_params_;
+  int nr_array2d_params_;
   /* private functions */
   std::vector<Param>& params();
 
 public:
   int numberDrvParams() const;
+  int numberArray2dParams() const;
   bool hasParamName(const std::string&) const;
   std::size_t idxFromParamName(const std::string&) const;
   static asynParamType drvType(const Param&);

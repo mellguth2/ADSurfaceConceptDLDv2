@@ -159,7 +159,8 @@ public:
   void update_ImageMode(int v) { cb_enum.cb(cb_enum.priv, 5, v); }
   void update_NumImages(int v) { cb_int32.cb(cb_int32.priv, 6, v); }
   void update_DataType(int v) { cb_enum.cb(cb_enum.priv, 7, v); }
-  void update_Ratemeter(size_t nr_elem, int* data) { 
+  void update_Ratemeter(size_t nr_elem, int* data) {
     cb_arr1d.cb(cb_arr1d.priv, 8, nr_elem*sizeof(int), data); }
-
+  void update_LiveImageXY(size_t nr_elem, size_t width, int* data) {
+    cb_arr2d.cb(cb_arr2d.priv, 9, nr_elem*sizeof(int), width, data); }
 };

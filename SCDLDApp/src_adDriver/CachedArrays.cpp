@@ -108,6 +108,38 @@ void CachedArrays::updateArray1D(
   }
 }
 
+void CachedArrays::updateImage(
+  int addr, DldApp::ElementDatatypeEnum elementtype,
+  std::size_t maxlength, std::size_t bytelen, std::size_t width, void* data)
+{
+  std::lock_guard<std::mutex> l(mutex_);
+  switch (elementtype) {
+  case DldApp::ELEMTYPE_I32:
+    {
+      auto length = bytelen / sizeof(int);
+      if (i32images.find(addr)==i32images.end()) {
+        i32images[addr] = {};
+        i32images[addr].data.reserve(maxlength);
+        // we must prevent that the memory buffer of the vector is ever
+        // relocated, once we passed the data pointer to an NDArray
+        // this would happen, if the resize
+      }
+      if (length > maxlength) {
+        length = maxlength;
+      }
+      image<int>& img = i32images.at(addr);
+      img.data.resize(length);
+      img.width = width;
+      img.height = img.data.size() / std::max(width, std::size_t{1u});
+      memcpy(img.data.data(), data, bytelen);
+    }
+    break;
+  default:
+    break;
+  }
+
+}
+
 bool CachedArrays::getArray1D(
   std::size_t drvpidx,
   asynParamType arraytype,
@@ -140,6 +172,19 @@ bool CachedArrays::getArray1D(
       f(v.data(), v.size() * sizeof(double));
       return true;
     }
+  }
+  catch (const std::out_of_range&) { }
+  return false;
+}
+
+bool CachedArrays::getImage(
+  int addr, std::function<void (void*, std::size_t, std::size_t)> f)
+{
+  std::lock_guard<std::mutex> l(mutex_);
+  try {
+    auto& img = i32images.at(addr);
+    f(img.data.data(), img.width, img.height);
+    return true;
   }
   catch (const std::out_of_range&) { }
   return false;

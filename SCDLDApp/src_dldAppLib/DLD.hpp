@@ -7,6 +7,7 @@
 #include "glue.hpp"
 #include "WorkerThread.hpp"
 #include "PipeRatemeter.hpp"
+#include "PipeImageXY.hpp"
 
 class DLD : public Glue<DLD>
 {
@@ -19,7 +20,6 @@ class DLD : public Glue<DLD>
     int image_mode;
     int num_images;
     int data_type;
-    std::vector<unsigned> ratemeter;
     Data();
   } data_;
 public:
@@ -44,6 +44,7 @@ private:
   // functions
   int init_impl();
   void configure_pipes();
+  void configure_pipes_liveimagexy();
   void configure_pipes_ratemeter();
   void cb_measurement_complete(int reason);
   static void cb_static_measurement_complete(void* priv, int reason);
@@ -51,6 +52,7 @@ private:
   int dev_desc_;
   WorkerThread worker_;
   PipeRatemeter ratemeter_;
+  PipeImageXY liveimagexy_;
   std::vector<iCreatedAtInit*> created_at_init_;
   std::vector<iEndOfMeasListener*> eom_listeners_;
   std::vector<iStartOfMeasListener*> som_listeners_;

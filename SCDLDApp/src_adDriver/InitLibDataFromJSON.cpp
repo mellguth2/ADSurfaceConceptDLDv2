@@ -64,6 +64,9 @@ int init_libdata_from_json(Lib& lib)
                               // create an asynPortDriver parameter, ourselves.
                               // This excludes parameters with an empty
                               // asynportname value in the JSON config
+                              // 2d arrays should have an empty asynportname and
+                              // are not counted.
+    int nr_array2d_params = 0;
     for (std::size_t pidx = 0; pidx < j.size(); pidx++) {
       auto jpar = j.at(pidx);
       std::string node{jpar.at("node")};
@@ -90,10 +93,16 @@ int init_libdata_from_json(Lib& lib)
         ElementDatatypeEnum etype =
           elemtypeFromString(jpar.at("element data type"));
         lib.params_.back().arr_cfg.reset(new ArrayParam(etype, maxlen));
+        if (libptype == DATATYPE_ARRAY2D) {
+          nr_array2d_params++;
+          lib.params_.back().arr_cfg->address =
+            jpar.at("epicsprops").at("address");
+        }
       }
       lib.name2libidx_[libpname] = pidx;
     }
     lib.nr_driver_params_ = nr_driver_params;
+    lib.nr_array2d_params_ = nr_array2d_params;
   } catch (const nlohmann::json::exception&) {
     return INIT_LIBDATA_ERR_PARSE_JSON;
   }

@@ -167,6 +167,18 @@ int DLD::init_impl()
 void DLD::configure_pipes()
 {
   configure_pipes_ratemeter();
+  configure_pipes_liveimagexy();
+}
+
+void DLD::configure_pipes_liveimagexy()
+{
+  liveimagexy_.setDataConsumer(
+    [this](std::size_t length, std::size_t width, int* data) {
+      update_LiveImageXY(length, width, data);
+    });
+  created_at_init_.push_back(&liveimagexy_);
+  som_listeners_.push_back(&liveimagexy_);
+  eom_listeners_.push_back(&liveimagexy_);
 }
 
 void DLD::configure_pipes_ratemeter()

@@ -45,6 +45,14 @@ public:
     std::size_t bytelen,
     void* data);
 
+  void updateImage(
+    int addr,
+    DldApp::ElementDatatypeEnum,
+    std::size_t maxlen,
+    std::size_t bytelen,
+    std::size_t width,
+    void* data);
+
   /**
    * @brief get array data that has been cached by a previous call to
    * updateArray1D()
@@ -59,6 +67,12 @@ public:
     asynParamType arraytype,
     std::function<void(void*, std::size_t)> consumer);
 
+  // getImage: currently only for Int32 voxels
+  // consumer function gets data pointer, width and height
+  bool getImage(
+    int addr,
+    std::function<void(void*, std::size_t, std::size_t)> consumer);
+
 private:
   typedef std::vector<char> i8array;
   typedef std::vector<short> i16array;
@@ -70,6 +84,12 @@ private:
   std::unordered_map<std::size_t, i32array> i32arrays;
   std::unordered_map<std::size_t, f32array> f32arrays;
   std::unordered_map<std::size_t, f64array> f64arrays;
+  template <typename T> struct image {
+    std::size_t width;
+    std::size_t height;
+    std::vector<T> data;
+  };
+  std::unordered_map<int, image<int> > i32images;
   std::mutex mutex_;
   template <DldApp::ElementDatatypeEnum E>
   struct EDTHelper;

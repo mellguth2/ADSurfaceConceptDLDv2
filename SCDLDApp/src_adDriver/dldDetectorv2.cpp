@@ -300,7 +300,7 @@ asynStatus dldDetectorv2::readFloat64Array(
 void dldDetectorv2::report(FILE *fp, int details)
 {
 
-    fprintf(fp, "Simulation detector %s\n", this->portName);
+    fprintf(fp, "Surface Concept DLD %s\n", this->portName);
     if (details > 0) {
         int nx, ny, dataType;
         getIntegerParam(ADSizeX, &nx);
@@ -336,7 +336,7 @@ dldDetectorv2::dldDetectorv2(
   int maxBuffers, size_t maxMemory, int priority, int stackSize)
   : ADDriver(
       portName,
-      1, // max_instances
+      DldApp::Lib::instance().numberArray2dParams(),
       DldApp::Lib::instance().numberDrvParams(),
       maxBuffers,
       maxMemory,

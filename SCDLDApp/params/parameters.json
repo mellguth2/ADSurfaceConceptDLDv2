@@ -148,7 +148,7 @@
     "node":"parameter",
     "name":"Ratemeter",
     "display name":"rate meter",
-    "description":"Displays rates of individual TDC channels and combined DLD events",
+    "description":"rates of TDC channels + combined DLD events",
     "data type":"array1d",
     "element data type":"i32",
     "maxlen":70,
@@ -157,6 +157,22 @@
     "unit":"events/sec",
     "epicsprops":{
       "asynportname":"DLD_RATEMETER"
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"LiveImageXY",
+    "display name":"live XY image",
+    "description":"",
+    "data type":"array2d",
+    "element data type":"i32",
+    "maxlen":4000000,
+    "read-only":true,
+    "default":"",
+    "unit":"",
+    "epicsprops":{
+      "asynportname":"",
+      "address":0
     }
   }
 ]

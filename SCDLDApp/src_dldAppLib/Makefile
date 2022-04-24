@@ -14,7 +14,8 @@ LIBRARY_IOC = dldApp
 LIB_SRCS += dldApp.cpp \
   DLD.cpp \
   WorkerThread.cpp \
-  PipeRatemeter.cpp
+  PipeRatemeter.cpp \
+  PipeImageXY.cpp
 USR_CXXFLAGS += -std=c++17
 
 LIB_SYS_LIBS += scTDC

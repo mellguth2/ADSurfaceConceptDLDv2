@@ -75,6 +75,9 @@ public:
   std::string paramName(int asynport_param_idx) const;
   DatatypeEnum libdatatype(int asynport_param_idx) const;
   const Param& libParam(int asynport_param_idx) const;
+  int array2d_address(std::size_t libpidx) const;
+  ElementDatatypeEnum element_type(std::size_t libpidx) const;
+  std::size_t array_maxlength(std::size_t libpidx) const;
 
 private:
   int readStrImpl(int libparidx, std::function<void(const std::string&)>);

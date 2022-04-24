@@ -389,3 +389,36 @@ const Param &LibUser::libParam(int asynport_param_idx) const
 {
   return Lib::instance().params().at(ap2lib(asynport_param_idx));
 }
+
+int LibUser::array2d_address(std::size_t libpidx) const
+{
+  try {
+    const auto& param = Lib::instance().params().at(libpidx);
+    if (param.arr_cfg) {
+      return param.arr_cfg->address;
+    }
+  } catch (const std::out_of_range&) { }
+  return -1;
+}
+
+ElementDatatypeEnum LibUser::element_type(std::size_t libpidx) const
+{
+  try {
+    const auto& param = Lib::instance().params().at(libpidx);
+    if (param.arr_cfg) {
+      return param.arr_cfg->elemtype;
+    }
+  } catch (const std::out_of_range&) { }
+  return ELEMTYPE_INVALID;
+}
+
+std::size_t LibUser::array_maxlength(std::size_t libpidx) const
+{
+  try {
+    const auto& param = Lib::instance().params().at(libpidx);
+    if (param.arr_cfg) {
+      return param.arr_cfg->maxlength;
+    }
+  } catch (const std::out_of_range&) { }
+  return 0;
+}

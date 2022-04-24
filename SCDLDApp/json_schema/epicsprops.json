@@ -7,6 +7,11 @@
     "asynportname": {
       "description" : "asynportdriver parameter name used in db records (INP/OUT)",
       "type" : "string"
+    },
+    "address" : {
+      "description" : "only for 2D arrays, the address in the areaDetector driver",
+      "type" : "integer",
+      "minimum" : 0
     }
   },
   "required": [ "asynportname" ]

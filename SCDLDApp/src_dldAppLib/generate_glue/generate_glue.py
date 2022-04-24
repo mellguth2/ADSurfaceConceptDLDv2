@@ -62,6 +62,22 @@ def upd_fun_arr1d(elem_datatype):
     return s.replace('<PIDX>', str(pidx)).replace('<NAME>', name)
   return upd
 
+# --- update function 2d array ------------------------------------------------
+
+# example
+#  void update_LiveImageXY(size_t nr_elem, size_t width, int* data) {
+#    cb_arr2d.cb(cb_arr2d.priv, 9, nr_elem*sizeof(int), width, data); }
+  
+def upd_fun_arr2d(elem_datatype):
+  c_type = element_data_type_to_ctype[elem_datatype]
+  s = '  void update_<NAME>(size_t nr_elem, size_t width, <C_TYPE>* data) {' \
+      '\n    ' \
+      'cb_arr2d.cb(cb_arr2d.priv, <PIDX>, nr_elem*sizeof(<C_TYPE>), width, data); }\n'
+  s = s.replace('<C_TYPE>', c_type)
+  def upd(pidx, name):
+    return s.replace('<PIDX>', str(pidx)).replace('<NAME>', name)
+  return upd
+
 # -----------------------------------------------------------------------------
 def generate_glue(infile, outfile):
   with open(infile, "r") as f_in:
@@ -89,6 +105,8 @@ def generate_glue(infile, outfile):
           continue
         if param['data type'] == 'array1d':
           f_out.write(upd_fun_arr1d(param['element data type'])(pidx, param['name']))
+        elif param['data type'] == 'array2d':
+          f_out.write(upd_fun_arr2d(param['element data type'])(pidx, param['name']))
         else:
           f_out.write(upd[param['data type']](pidx, param['name']))
         pidx += 1

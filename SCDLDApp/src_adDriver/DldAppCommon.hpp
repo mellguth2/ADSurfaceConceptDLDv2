@@ -37,9 +37,10 @@ inline size_t elementSize(ElementDatatypeEnum e) {
 
 struct ArrayParam {
   ArrayParam(ElementDatatypeEnum e, std::size_t l)
-    : elemtype(e), maxlength(l) {}
+    : elemtype(e), maxlength(l), address(-1) {}
   ElementDatatypeEnum elemtype;  // C type for the elements of the array
   std::size_t maxlength;
+  int address; // only for 2D arrays
 };
 
 struct Param {

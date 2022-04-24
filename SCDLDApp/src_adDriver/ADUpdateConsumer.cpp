@@ -118,5 +118,54 @@ void ADUpdateConsumer::UpdateArray1D(
 void ADUpdateConsumer::UpdateArray2D(
   std::size_t libpidx, std::size_t bytelen, std::size_t width, void* data)
 {
-  // TODO
+  int addr = parent_->libusr_.array2d_address(libpidx);
+  auto elemtype = parent_->libusr_.element_type(libpidx);
+  auto maxlength = parent_->libusr_.array_maxlength(libpidx);
+  if (addr < 0 || addr >= DldApp::Lib::instance().numberArray2dParams()
+      || elemtype == DldApp::ELEMTYPE_INVALID
+      || width == 0)
+  {
+    return;
+  }
+  //
+  // (1) we have no guarantees from the libdldApp that the data memory buffer will
+  // live longer than when we return from this function, so we make a copy here
+  // (by calling arrays_->updateImage)
+  // (2) ADUpdateConsumer::UpdateArray2D(...) may be called at any time, so we
+  // don't know whether we can lock the ADDriver and we might not want to block
+  // the app library, so we defer ADDriver actions to a separate worker thread.
+  // Currently, these circumstances lead us to making 2 copies of the image,
+  // one in arrays_->updateImage(...), and one memcpy down below in the worker
+  // task. This is a bit wasteful, but at least safe.
+  // We could pass our copied data buffer to the pNDArrayPool->alloc, thereby
+  // eliminating the 2nd copy, but our copied data buffer does not necessarily
+  // remain unchanged until all users of the NDArray have released it.
+  arrays_->updateImage(addr, elemtype, maxlength, bytelen, width, data);
+  parent_->worker_.addTask([this, addr, bytelen]() {
+    parent_->lock();
+    bool image_found = arrays_->getImage(
+      addr,
+      [this, addr, bytelen](void* data, std::size_t width, std::size_t height) {
+        auto& pArr = parent_->pArrays[addr];
+        if (pArr != 0) {
+          pArr->release();
+        }
+        size_t dims[] = {height, width};
+        pArr = parent_->pNDArrayPool->alloc(2, dims, NDInt32, 0, NULL);
+        if (!pArr) {
+          return;
+        }
+        parent_->updateTimeStamp(&(pArr->epicsTS));
+        NDArrayInfo_t info;
+        pArr->getInfo(&info);
+        memcpy(pArr->pData, data, std::min(bytelen, info.totalBytes));
+      });
+    parent_->unlock();
+    if (image_found) {
+      auto& pArr = parent_->pArrays[addr];
+      if (pArr != nullptr) {
+        parent_->doCallbacksGenericPointer(pArr, parent_->NDArrayData, addr);
+      }
+    }
+  });
 }
