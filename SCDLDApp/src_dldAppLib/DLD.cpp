@@ -212,6 +212,7 @@ int DLD::write_BinX(int v)
 
 int DLD::read_BinX(int *dest)
 {
+  *dest = liveimagexy_.binX();
   return 0;
 }
 
@@ -288,6 +289,7 @@ int DLD::init_impl()
 
 void DLD::configure_pipes()
 {
+  configure_timebin();
   configure_pipes_ratemeter();
   configure_pipes_liveimagexy();
 }
@@ -311,6 +313,11 @@ void DLD::configure_pipes_ratemeter()
   created_at_init_.push_back(&ratemeter_);
   som_listeners_.push_back(&ratemeter_);
   eom_listeners_.push_back(&ratemeter_);
+}
+
+void DLD::configure_timebin()
+{
+  created_at_init_.push_back(&timebin_);
 }
 
 void DLD::cb_measurement_complete(int reason)

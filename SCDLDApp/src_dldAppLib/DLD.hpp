@@ -9,6 +9,7 @@
 #include "WorkerThread.hpp"
 #include "PipeRatemeter.hpp"
 #include "PipeImageXY.hpp"
+#include "TimeBin.hpp"
 
 class DLD : public Glue<DLD>
 {
@@ -64,6 +65,7 @@ private:
   void configure_pipes();
   void configure_pipes_liveimagexy();
   void configure_pipes_ratemeter();
+  void configure_timebin();
   void cb_measurement_complete(int reason);
   static void cb_static_measurement_complete(void* priv, int reason);
   int start_measurement();
@@ -73,6 +75,7 @@ private:
   WorkerThread worker_;
   PipeRatemeter ratemeter_;
   PipeImageXY liveimagexy_;
+  TimeBin timebin_;
   std::vector<iCreatedAtInit*> created_at_init_;
   std::vector<iEndOfMeasListener*> eom_listeners_;
   std::vector<iStartOfMeasListener*> som_listeners_;

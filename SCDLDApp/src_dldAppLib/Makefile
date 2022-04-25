@@ -15,7 +15,8 @@ LIB_SRCS += dldApp.cpp \
   DLD.cpp \
   WorkerThread.cpp \
   PipeRatemeter.cpp \
-  PipeImageXY.cpp
+  PipeImageXY.cpp \
+  TimeBin.cpp
 USR_CXXFLAGS += -std=c++17
 
 LIB_SYS_LIBS += scTDC

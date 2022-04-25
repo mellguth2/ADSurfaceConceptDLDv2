@@ -61,8 +61,12 @@ void PipeImageXY::end_of_measurement()
   data_consumer_(
     data_.size(),
     params_->roi.size.x,
-    reinterpret_cast<int*>(data_.data())); // slightly evil ^^
-
+    reinterpret_cast<int*>(data_.data()));
+  // slightly evil (unsigned misinterpreted as int. scTDC1 only has
+  // unsigned buffer types for the histogram pipes, and ADDriver only has
+  // signed buffer types and I don't want to convert. This is fine, as long
+  // as the counts per pixel are not going above max int = 2^31 - 1, which
+  // is about 2 billion)
 }
 
 void PipeImageXY::setDataConsumer(PipeImageXY::data_consumer_t v)
