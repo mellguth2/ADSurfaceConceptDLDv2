@@ -67,16 +67,30 @@ public:
     write_string_funs.insert({1, &T::write_ConfigFile});
     read_string_funs.insert({1, &T::read_ConfigFile});
     read_string_funs.insert({2, &T::read_StatusMessage});
-    write_float64_funs.insert({3, &T::write_Exposure});
-    read_float64_funs.insert({3, &T::read_Exposure});
-    write_enum_funs.insert({4, &T::write_Acquire});
-    read_enum_funs.insert({4, &T::read_Acquire});
-    write_enum_funs.insert({5, &T::write_ImageMode});
-    read_enum_funs.insert({5, &T::read_ImageMode});
-    write_int_funs.insert({6, &T::write_NumImages});
-    read_int_funs.insert({6, &T::read_NumImages});
-    write_enum_funs.insert({7, &T::write_DataType});
-    read_enum_funs.insert({7, &T::read_DataType});
+    read_enum_funs.insert({3, &T::read_DetectorState});
+    write_float64_funs.insert({4, &T::write_Exposure});
+    read_float64_funs.insert({4, &T::read_Exposure});
+    write_float64_funs.insert({5, &T::write_AcquirePeriod});
+    read_float64_funs.insert({5, &T::read_AcquirePeriod});
+    write_enum_funs.insert({6, &T::write_Acquire});
+    read_enum_funs.insert({6, &T::read_Acquire});
+    write_enum_funs.insert({7, &T::write_ImageMode});
+    read_enum_funs.insert({7, &T::read_ImageMode});
+    write_int_funs.insert({8, &T::write_NumImages});
+    read_int_funs.insert({8, &T::read_NumImages});
+    read_int_funs.insert({9, &T::read_NumImagesCounter});
+    write_int_funs.insert({10, &T::write_BinX});
+    read_int_funs.insert({10, &T::read_BinX});
+    write_int_funs.insert({11, &T::write_BinY});
+    read_int_funs.insert({11, &T::read_BinY});
+    write_int_funs.insert({12, &T::write_MinX});
+    read_int_funs.insert({12, &T::read_MinX});
+    write_int_funs.insert({13, &T::write_MinY});
+    read_int_funs.insert({13, &T::read_MinY});
+    write_int_funs.insert({14, &T::write_SizeX});
+    read_int_funs.insert({14, &T::read_SizeX});
+    write_int_funs.insert({15, &T::write_SizeY});
+    read_int_funs.insert({15, &T::read_SizeY});
   }
 
   int write_int(size_t pidx, int value) {
@@ -154,13 +168,22 @@ public:
   void update_Initialize(int v) { cb_enum.cb(cb_enum.priv, 0, v); }
   void update_ConfigFile(const std::string& v) { cb_string.cb(cb_string.priv, 1, v.c_str()); }
   void update_StatusMessage(const std::string& v) { cb_string.cb(cb_string.priv, 2, v.c_str()); }
-  void update_Exposure(double v) { cb_float64.cb(cb_float64.priv, 3, v); }
-  void update_Acquire(int v) { cb_enum.cb(cb_enum.priv, 4, v); }
-  void update_ImageMode(int v) { cb_enum.cb(cb_enum.priv, 5, v); }
-  void update_NumImages(int v) { cb_int32.cb(cb_int32.priv, 6, v); }
-  void update_DataType(int v) { cb_enum.cb(cb_enum.priv, 7, v); }
-  void update_Ratemeter(size_t nr_elem, int* data) {
-    cb_arr1d.cb(cb_arr1d.priv, 8, nr_elem*sizeof(int), data); }
+  void update_DetectorState(int v) { cb_enum.cb(cb_enum.priv, 3, v); }
+  void update_Exposure(double v) { cb_float64.cb(cb_float64.priv, 4, v); }
+  void update_AcquirePeriod(double v) { cb_float64.cb(cb_float64.priv, 5, v); }
+  void update_Acquire(int v) { cb_enum.cb(cb_enum.priv, 6, v); }
+  void update_ImageMode(int v) { cb_enum.cb(cb_enum.priv, 7, v); }
+  void update_NumImages(int v) { cb_int32.cb(cb_int32.priv, 8, v); }
+  void update_NumImagesCounter(int v) { cb_int32.cb(cb_int32.priv, 9, v); }
+  void update_BinX(int v) { cb_int32.cb(cb_int32.priv, 10, v); }
+  void update_BinY(int v) { cb_int32.cb(cb_int32.priv, 11, v); }
+  void update_MinX(int v) { cb_int32.cb(cb_int32.priv, 12, v); }
+  void update_MinY(int v) { cb_int32.cb(cb_int32.priv, 13, v); }
+  void update_SizeX(int v) { cb_int32.cb(cb_int32.priv, 14, v); }
+  void update_SizeY(int v) { cb_int32.cb(cb_int32.priv, 15, v); }
+  void update_Ratemeter(size_t nr_elem, int* data) { 
+    cb_arr1d.cb(cb_arr1d.priv, 16, nr_elem*sizeof(int), data); }
   void update_LiveImageXY(size_t nr_elem, size_t width, int* data) {
-    cb_arr2d.cb(cb_arr2d.priv, 9, nr_elem*sizeof(int), width, data); }
+    cb_arr2d.cb(cb_arr2d.priv, 17, nr_elem*sizeof(int), width, data); }
+
 };

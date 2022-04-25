@@ -48,12 +48,57 @@
   },
   {
     "node":"parameter",
+    "name":"DetectorState",
+    "display name":"Detector State",
+    "description":"",
+    "data type": "enum",
+    "read-only":true,
+    "default":"Single",
+    "unit":"",
+    "options":{
+      "Idle":0,
+      "Acquire":1,
+      "Readout":2,
+      "Correct":3,
+      "Saving":4,
+      "Aborting":5,
+      "Error":6,
+      "Waiting":7,
+      "Initializing":8,
+      "Disconnected":9,
+      "Aborted":10
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
     "name":"Exposure",
     "display name":"Exposure",
     "description":"Duration of a measurement",
     "data type":"float64",
     "read-only":false,
     "default":"1.0",
+    "persistent":true,
+    "unit":"s",
+    "precision":3,
+    "range":{
+      "min":0.0,
+      "max":2e6
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"AcquirePeriod",
+    "display name":"Acquisition Period",
+    "description":"Period for starting measurements",
+    "data type":"float64",
+    "read-only":false,
+    "default":"0.01",
     "persistent":true,
     "unit":"s",
     "precision":3,
@@ -96,7 +141,7 @@
     "options":{
       "Single":0,
       "Multiple":1,
-      "Continous":2
+      "Continuous":2
     },
     "epicsprops":{
       "asynportname":""
@@ -122,28 +167,123 @@
   },
   {
     "node":"parameter",
-    "name":"DataType",
-    "display name":"Data type",
-    "description":"data type of images",
-    "data type": "enum",
-    "read-only":false,
-    "default":"UInt32",
-    "persistent":false,
+    "name":"NumImagesCounter",
+    "display name":"Image Count",
+    "description":"Counts images in 'multiple'/'continuous' mode",
+    "data type":"int32",
+    "read-only":true,
+    "default":0,
     "unit":"",
-    "options":{
-      "Int8":0,
-      "UInt8":1,
-      "Int16":2,
-      "UInt16":3,
-      "Int32":4,
-      "UInt32":5,
-      "Float32":6,
-      "Float64":7
+    "range":{
+      "min":0,
+      "max":1e6
     },
     "epicsprops":{
       "asynportname":""
     }
   },
+  {
+    "node":"parameter",
+    "name":"BinX",
+    "display name":"Binning X",
+    "description":"log_2 of binning in x direction",
+    "data type":"int32",
+    "read-only":false,
+    "default":0,
+    "unit":"",
+    "range":{
+      "min":0,
+      "max":15
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"BinY",
+    "display name":"Binning Y",
+    "description":"log_2 of binning in y direction",
+    "data type":"int32",
+    "read-only":false,
+    "default":0,
+    "unit":"",
+    "range":{
+      "min":0,
+      "max":15
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"MinX",
+    "display name":"Region start X",
+    "description":"in binned units",
+    "data type":"int32",
+    "read-only":false,
+    "default":0,
+    "unit":"",
+    "range":{
+      "min":0,
+      "max":65000
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"MinY",
+    "display name":"Region start Y",
+    "description":"in binned units",
+    "data type":"int32",
+    "read-only":false,
+    "default":0,
+    "unit":"",
+    "range":{
+      "min":0,
+      "max":65000
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"SizeX",
+    "display name":"Region size X",
+    "description":"in binned units",
+    "data type":"int32",
+    "read-only":false,
+    "default":0,
+    "unit":"",
+    "range":{
+      "min":0,
+      "max":16383
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"SizeY",
+    "display name":"Region size Y",
+    "description":"in binned units",
+    "data type":"int32",
+    "read-only":false,
+    "default":0,
+    "unit":"",
+    "range":{
+      "min":0,
+      "max":16383
+    },
+    "epicsprops":{
+      "asynportname":""
+    }
+  },  
   {
     "node":"parameter",
     "name":"Ratemeter",

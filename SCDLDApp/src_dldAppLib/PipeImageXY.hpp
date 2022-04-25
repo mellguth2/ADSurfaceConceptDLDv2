@@ -23,14 +23,30 @@ public:
   virtual void start_of_measurement(int time_ms);
   virtual void end_of_measurement();
   void setDataConsumer(data_consumer_t);
+  void setMinX(int);
+  void setMinY(int);
+  void setSizeX(int);
+  void setSizeY(int);
+  void setBinX(int);
+  void setBinY(int);
+  int minX() const;
+  int minY() const;
+  int sizeX() const;
+  int sizeY() const;
+  int binX() const;
+  int binY() const;
 private:
   static int static_allocator_cb(void* priv, void** buf);
   int allocator_cb(void** buf);
+  void resize_data();
+  static int log2_(unsigned);
 
   int dev_desc_ = -1;
   int pipe_desc_ = -1;
+  bool change_request_ = false;
   data_consumer_t data_consumer_;
   std::unique_ptr<sc_pipe_dld_image_xy_params_t> params_;
+  std::unique_ptr<sc_pipe_dld_image_xy_params_t> next_params_;
   std::vector<unsigned> data_;
 };
 

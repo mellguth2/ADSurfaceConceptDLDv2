@@ -357,12 +357,22 @@ dldDetectorv2::dldDetectorv2(
     });
   // manually link parameters that are pre-defined by ADDriver base class
   // if they have a correspondence in the application library
+  libusr_.linkParam(ADStatusMessage, asynParamOctet, "StatusMessage");
+  libusr_.linkParam(ADStatus, asynParamInt32, "DetectorState");
   libusr_.linkParam(ADAcquire, asynParamInt32, "Acquire");
   libusr_.linkParam(ADImageMode, asynParamInt32, "ImageMode");
   libusr_.linkParam(ADNumImages, asynParamInt32, "NumImages");
-  libusr_.linkParam(NDDataType, asynParamInt32, "DataType");
   libusr_.linkParam(ADAcquireTime, asynParamFloat64, "Exposure");
-  libusr_.linkParam(ADStatusMessage, asynParamOctet, "StatusMessage");
+  libusr_.linkParam(ADAcquirePeriod, asynParamFloat64, "AcquirePeriod");
+
+  libusr_.linkParam(ADNumImagesCounter, asynParamInt32, "NumImagesCounter");
+  libusr_.linkParam(ADBinX, asynParamInt32, "BinX");
+  libusr_.linkParam(ADBinY, asynParamInt32, "BinY");
+  libusr_.linkParam(ADMinX, asynParamInt32, "MinX");
+  libusr_.linkParam(ADMinY, asynParamInt32, "MinY");
+  libusr_.linkParam(ADSizeX, asynParamInt32, "SizeX");
+  libusr_.linkParam(ADSizeY, asynParamInt32, "SizeY");
+
 
   std::unique_ptr<ADUpdateConsumer> upd_cons_{new ADUpdateConsumer(this)};
   arrays_ = &(upd_cons_->arrays());
@@ -374,6 +384,7 @@ dldDetectorv2::dldDetectorv2(
   status |= setStringParam (ADModel, "Delay Line Detector");
   status |= setIntegerParam(ADMaxSizeX, maxSizeX);
   status |= setIntegerParam(ADMaxSizeY, maxSizeY);
+  status |= setIntegerParam(ADStatus, 9); // 9 = Disconnected
   status |= setIntegerParam(ADMinX, 0);
   status |= setIntegerParam(ADMinY, 0);
   status |= setIntegerParam(ADBinX, 1);
