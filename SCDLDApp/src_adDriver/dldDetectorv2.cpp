@@ -340,7 +340,8 @@ dldDetectorv2::dldDetectorv2(
       DldApp::Lib::instance().numberDrvParams(),
       maxBuffers,
       maxMemory,
-      0, 0, /* No interfaces beyond those set in ADDriver.cpp */
+      asynFloat64ArrayMask | asynInt32ArrayMask,
+      asynFloat64ArrayMask | asynInt32ArrayMask,
       0, 1, /* ASYN_CANBLOCK=0, ASYN_MULTIDEVICE=0, autoConnect=1 */
       priority,
       stackSize),

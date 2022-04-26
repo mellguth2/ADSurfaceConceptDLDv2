@@ -283,7 +283,60 @@
     "epicsprops":{
       "asynportname":""
     }
-  },  
+  },
+  {
+    "node":"parameter",
+    "name":"SizeT",
+    "display name":"Region size T",
+    "description":"number of data points in histogram on t axis",
+    "data type":"int32",
+    "read-only":false,
+    "default":100,
+    "unit":"",
+    "range":{
+      "min":0,
+      "max":2147483647
+    },
+    "epicsprops":{
+      "asynportname":"DLD_SIZE_T"
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"MinTSI",
+    "display name":"Region start T",
+    "description":"start of time interval",
+    "data type":"float64",
+    "read-only":false,
+    "default":0.0,
+    "unit":"ns",
+    "range":{
+      "min":0.0,
+      "max":1e12
+    },
+    "precision":3,
+    "epicsprops":{
+      "asynportname":"DLD_MIN_T_SI"
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"SizeTSI",
+    "display name":"Region size T",
+    "description":"length of time interval",
+    "data type":"float64",
+    "read-only":false,
+    "default":0.0,
+    "unit":"ns",
+    "range":{
+      "min":0.0,
+      "max":1e12
+    },
+    "precision":3,
+    "epicsprops":{
+      "asynportname":"DLD_SIZE_T_SI"
+    }
+  },
   {
     "node":"parameter",
     "name":"Ratemeter",
@@ -301,6 +354,23 @@
   },
   {
     "node":"parameter",
+    "name":"RatemeterMax",
+    "display name":"rate meter maximum",
+    "description":"maximum of the rates of TDC channels",
+    "data type":"int32",
+    "read-only":true,
+    "default":"0",
+    "unit":"events/sec",
+    "range":{
+      "min":0,
+      "max":20000000
+    },
+    "epicsprops":{
+      "asynportname":"DLD_MAXRATE"
+    }
+  },
+  {
+    "node":"parameter",
     "name":"LiveImageXY",
     "display name":"live XY image",
     "description":"",
@@ -313,6 +383,36 @@
     "epicsprops":{
       "asynportname":"",
       "address":0
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"TimeHistoDataX",
+    "display name":"time histogram, x values",
+    "description":"",
+    "data type":"array1d",
+    "element data type":"f64",
+    "maxlen":4000000,
+    "read-only":true,
+    "default":"",
+    "unit":"",
+    "epicsprops":{
+      "asynportname":"DLD_TIME_HISTO_X"
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"TimeHistoDataY",
+    "display name":"time histogram, y values",
+    "description":"",
+    "data type":"array1d",
+    "element data type":"f64",
+    "maxlen":4000000,
+    "read-only":true,
+    "default":"",
+    "unit":"",
+    "epicsprops":{
+      "asynportname":"DLD_TIME_HISTO_Y"
     }
   }
 ]

@@ -91,6 +91,13 @@ public:
     read_int_funs.insert({14, &T::read_SizeX});
     write_int_funs.insert({15, &T::write_SizeY});
     read_int_funs.insert({15, &T::read_SizeY});
+    write_int_funs.insert({16, &T::write_SizeT});
+    read_int_funs.insert({16, &T::read_SizeT});
+    write_float64_funs.insert({17, &T::write_MinTSI});
+    read_float64_funs.insert({17, &T::read_MinTSI});
+    write_float64_funs.insert({18, &T::write_SizeTSI});
+    read_float64_funs.insert({18, &T::read_SizeTSI});
+    read_int_funs.insert({19, &T::read_RatemeterMax});
   }
 
   int write_int(size_t pidx, int value) {
@@ -181,9 +188,17 @@ public:
   void update_MinY(int v) { cb_int32.cb(cb_int32.priv, 13, v); }
   void update_SizeX(int v) { cb_int32.cb(cb_int32.priv, 14, v); }
   void update_SizeY(int v) { cb_int32.cb(cb_int32.priv, 15, v); }
+  void update_SizeT(int v) { cb_int32.cb(cb_int32.priv, 16, v); }
+  void update_MinTSI(double v) { cb_float64.cb(cb_float64.priv, 17, v); }
+  void update_SizeTSI(double v) { cb_float64.cb(cb_float64.priv, 18, v); }
   void update_Ratemeter(size_t nr_elem, int* data) { 
-    cb_arr1d.cb(cb_arr1d.priv, 16, nr_elem*sizeof(int), data); }
+    cb_arr1d.cb(cb_arr1d.priv, 19, nr_elem*sizeof(int), data); }
+  void update_RatemeterMax(int v) { cb_int32.cb(cb_int32.priv, 20, v); }
   void update_LiveImageXY(size_t nr_elem, size_t width, int* data) {
-    cb_arr2d.cb(cb_arr2d.priv, 17, nr_elem*sizeof(int), width, data); }
+    cb_arr2d.cb(cb_arr2d.priv, 21, nr_elem*sizeof(int), width, data); }
+  void update_TimeHistoDataX(size_t nr_elem, double* data) { 
+    cb_arr1d.cb(cb_arr1d.priv, 22, nr_elem*sizeof(double), data); }
+  void update_TimeHistoDataY(size_t nr_elem, double* data) { 
+    cb_arr1d.cb(cb_arr1d.priv, 23, nr_elem*sizeof(double), data); }
 
 };

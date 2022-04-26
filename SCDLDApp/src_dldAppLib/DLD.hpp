@@ -9,6 +9,7 @@
 #include "WorkerThread.hpp"
 #include "PipeRatemeter.hpp"
 #include "PipeImageXY.hpp"
+#include "PipeTimeHisto.hpp"
 #include "TimeBin.hpp"
 
 class DLD : public Glue<DLD>
@@ -24,7 +25,10 @@ class DLD : public Glue<DLD>
     int num_images;
     int image_counter;
     int detector_state;
-    bool user_stop_request;
+    int ratemeter_max;
+    int sizeT;
+    double minTSI;
+    double sizeTSI;
     Data();
   } data_;
 public:
@@ -58,24 +62,33 @@ public:
   int read_SizeX(int*);
   int write_SizeY(int);
   int read_SizeY(int*);
-
+  int write_SizeT(int);
+  int read_SizeT(int*);
+  int write_MinTSI(double);
+  int read_MinTSI(double*);
+  int write_SizeTSI(double);
+  int read_SizeTSI(double*);
+  int read_RatemeterMax(int*);
 private:
   // functions
   int init_impl();
   void configure_pipes();
   void configure_pipes_liveimagexy();
   void configure_pipes_ratemeter();
+  void configure_pipes_timehisto();
   void configure_timebin();
   void cb_measurement_complete(int reason);
   static void cb_static_measurement_complete(void* priv, int reason);
   int start_measurement();
   // variables
   int dev_desc_;
+  bool user_stop_request_ = false;
   std::chrono::steady_clock::time_point last_acq_start_;
   WorkerThread worker_;
+  TimeBin timebin_; // keep this above timehisto_
   PipeRatemeter ratemeter_;
   PipeImageXY liveimagexy_;
-  TimeBin timebin_;
+  PipeTimeHisto timehisto_;
   std::vector<iCreatedAtInit*> created_at_init_;
   std::vector<iEndOfMeasListener*> eom_listeners_;
   std::vector<iStartOfMeasListener*> som_listeners_;

@@ -62,6 +62,64 @@ record(waveform, "$(P)$(R)ConfigFile")
     field(NELM, "2048")
     info(autosaveFields, "VAL")
 }
+record(longin, "$(P)$(R)SizeT_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(DESC, "number of data points in his")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_SIZE_T")
+    field(SCAN, "I/O Intr")
+}
+record(longout, "$(P)$(R)SizeT")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(DESC, "number of data points in his")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_SIZE_T")
+    field(VAL, "100")
+    info(autosaveFields, "VAL")
+}
+record(ai, "$(P)$(R)MinTSI_RBV")
+{
+    field(DTYP, "asynFloat64")
+    field(DESC, "start of time interval")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_MIN_T_SI")
+    field(VAL,  "0.000")
+    field(PREC, "3")
+    field(EGU, "ns")
+    field(SCAN, "I/O Intr")
+}
+record(ao, "$(P)$(R)MinTSI")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynFloat64")
+    field(DESC, "start of time interval")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_MIN_T_SI")
+    field(VAL,  "0.000")
+    field(PREC, "3")
+    field(EGU, "ns")
+    info(autosaveFields, "VAL")
+}
+record(ai, "$(P)$(R)SizeTSI_RBV")
+{
+    field(DTYP, "asynFloat64")
+    field(DESC, "length of time interval")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_SIZE_T_SI")
+    field(VAL,  "0.000")
+    field(PREC, "3")
+    field(EGU, "ns")
+    field(SCAN, "I/O Intr")
+}
+record(ao, "$(P)$(R)SizeTSI")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynFloat64")
+    field(DESC, "length of time interval")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_SIZE_T_SI")
+    field(VAL,  "0.000")
+    field(PREC, "3")
+    field(EGU, "ns")
+    info(autosaveFields, "VAL")
+}
 
 record(waveform, "$(P)$(R)Ratemeter")
 {
@@ -71,5 +129,34 @@ record(waveform, "$(P)$(R)Ratemeter")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_RATEMETER")
     field(FTVL, "LONG")
     field(NELM, "70")
+    field(SCAN, "I/O Intr")
+}
+record(longin, "$(P)$(R)RatemeterMax")
+{
+    field(DTYP, "asynInt32")
+    field(DESC, "maximum of the rates of TDC ")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_MAXRATE")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)$(R)TimeHistoDataX")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynFloat64ArrayIn")
+    field(DESC, "")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_TIME_HISTO_X")
+    field(FTVL, "DOUBLE")
+    field(NELM, "4000000")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)$(R)TimeHistoDataY")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynFloat64ArrayIn")
+    field(DESC, "")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DLD_TIME_HISTO_Y")
+    field(FTVL, "DOUBLE")
+    field(NELM, "4000000")
     field(SCAN, "I/O Intr")
 }

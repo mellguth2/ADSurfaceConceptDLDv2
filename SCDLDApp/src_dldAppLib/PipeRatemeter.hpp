@@ -15,7 +15,8 @@ class PipeRatemeter
 
 {
 public:
-  typedef std::function<void(int*, std::size_t)> data_consumer_t;
+  // args are ratemeter array data, array length, maximum of rates
+  typedef std::function<void(int*, std::size_t, int)> data_consumer_t;
   PipeRatemeter();
   virtual ~PipeRatemeter();
   int create(int dev_desc) override;

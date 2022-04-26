@@ -58,7 +58,13 @@ void PipeRatemeter::end_of_measurement()
   outbuf_[2] = calc(buf_->counts_read[0][2]);
   outbuf_[3] = calc(buf_->counts_read[0][3]);
   outbuf_[4] = calc(std::max(buf_->events_found[0], buf_->events_received[0]));
-  data_consumer_(outbuf_.data(), outbuf_.size());
+  int rates_max = 0;
+  for (std::size_t i = 0; i < 4; i++) {
+    for (std::size_t j = 0; j < 16; j++) {
+      rates_max = std::max(rates_max, calc(buf_->counts_read[i][j]));
+    }
+  }
+  data_consumer_(outbuf_.data(), outbuf_.size(), rates_max);
 }
 
 void PipeRatemeter::setDataConsumer(PipeRatemeter::data_consumer_t f)

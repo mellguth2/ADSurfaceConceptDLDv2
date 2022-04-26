@@ -10,6 +10,8 @@ PipeImageXY::PipeImageXY()
   params_.reset(new sc_pipe_dld_image_xy_params_t);
   next_params_.reset(new sc_pipe_dld_image_xy_params_t);
   auto& p = *params_; // short alias
+  p.depth = BS32;
+  p.channel = -1;
   p.roi.offset.x = 0;
   p.roi.offset.y = 0;
   p.roi.offset.time = 0;
@@ -19,8 +21,6 @@ PipeImageXY::PipeImageXY()
   p.binning.x = 1;
   p.binning.y = 1;
   p.binning.time = 1;
-  p.channel = -1;
-  p.depth = BS32;
   p.modulo = 0;
   p.accumulation_ms = 0xFFFFFFFFu;
   p.allocator_owner = this;

@@ -40,7 +40,8 @@ void call_async(F&& fun) {
 
 DLD::DLD()
   : Glue(this),
-    dev_desc_(-1)
+    dev_desc_(-1),
+    timehisto_(timebin_)
 {
   configure_pipes();
 }
@@ -55,7 +56,10 @@ DLD::Data::Data()
     num_images(1),
     image_counter(0),
     detector_state(DETECTORSTATE_DISCONNECTED),
-    user_stop_request(false)
+    ratemeter_max(0),
+    sizeT(100),
+    minTSI(0.0),
+    sizeTSI(1000.0)
 { }
 
 int DLD::write_Initialize(int v)
@@ -153,7 +157,7 @@ int DLD::write_Acquire(int v)
 {
   if (data_.acquire == 0 && v == 1 && data_.initialized == 1) {
     data_.image_counter = 0;
-    data_.user_stop_request = false;
+    user_stop_request_ = false;
     return start_measurement();
   }
   else if (data_.acquire == 1 && v == 0 && data_.initialized == 1) {
@@ -161,7 +165,7 @@ int DLD::write_Acquire(int v)
       sc_tdc_interrupt2(dev_desc_); // asynchronous, do not update_Acquire yet
     }
     else {
-      data_.user_stop_request = true;
+      user_stop_request_ = true;
     }
     return 0;
   }
@@ -276,6 +280,48 @@ int DLD::read_SizeY(int *dest)
   return 0;
 }
 
+int DLD::write_SizeT(int v)
+{
+  timehisto_.setSizeT(v);
+  return 0;
+}
+
+int DLD::read_SizeT(int *dest)
+{
+  *dest = timehisto_.sizeT();
+  return 0;
+}
+
+int DLD::write_MinTSI(double v)
+{
+  timehisto_.setMinTSI(v);
+  return 0;
+}
+
+int DLD::read_MinTSI(double *dest)
+{
+  *dest = timehisto_.minTSI();
+  return 0;
+}
+
+int DLD::write_SizeTSI(double v)
+{
+  timehisto_.setSizeTSI(v);
+  return 0;
+}
+
+int DLD::read_SizeTSI(double *dest)
+{
+  *dest = timehisto_.sizeTSI();
+  return 0;
+}
+
+int DLD::read_RatemeterMax(int *dest)
+{
+  *dest = data_.ratemeter_max;
+  return 0;
+}
+
 int DLD::init_impl()
 {
   int ret = sc_tdc_init_inifile(data_.configfile.c_str());
@@ -289,9 +335,10 @@ int DLD::init_impl()
 
 void DLD::configure_pipes()
 {
-  configure_timebin();
+  configure_timebin(); // keep this before pipes
   configure_pipes_ratemeter();
   configure_pipes_liveimagexy();
+  configure_pipes_timehisto();
 }
 
 void DLD::configure_pipes_liveimagexy()
@@ -307,12 +354,27 @@ void DLD::configure_pipes_liveimagexy()
 
 void DLD::configure_pipes_ratemeter()
 {
-  ratemeter_.setDataConsumer([this](int* data, std::size_t length){
+  ratemeter_.setDataConsumer([this](int* data, std::size_t length, int maxrate)
+  {
     update_Ratemeter(length, data);
+    data_.ratemeter_max = maxrate;
+    update_RatemeterMax(maxrate);
   });
   created_at_init_.push_back(&ratemeter_);
   som_listeners_.push_back(&ratemeter_);
   eom_listeners_.push_back(&ratemeter_);
+}
+
+void DLD::configure_pipes_timehisto()
+{
+  timehisto_.setDataConsumer([this](std::size_t length, double* x, double* y)
+  {
+    update_TimeHistoDataX(length, x);
+    update_TimeHistoDataY(length, y);
+  });
+  created_at_init_.push_back(&timehisto_);
+  som_listeners_.push_back(&timehisto_);
+  eom_listeners_.push_back(&timehisto_);
 }
 
 void DLD::configure_timebin()
@@ -346,7 +408,7 @@ void DLD::cb_measurement_complete(int reason)
       {
         if ((data_.image_mode == IMAGEMODE_MULTIPLE &&
             data_.image_counter >= data_.num_images)
-            || data_.user_stop_request)
+            || user_stop_request_)
         {
           data_.acquire = 0;
           update_Acquire(0);
