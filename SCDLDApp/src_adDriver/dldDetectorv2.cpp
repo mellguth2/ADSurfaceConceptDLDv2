@@ -48,8 +48,10 @@ asynStatus dldDetectorv2::writeInt32(asynUser *pasynUser, epicsInt32 value)
     else if (ret != DLDAPPLIB_NOT_MY_PARAM) {
       std::ostringstream oss;
       oss << driverName << ":writeInt32() : app library returned error "
-          << ret << " for parameter " << libusr_.paramName(param_idx);
+          << ret << " for parameter " << libusr_.paramName(param_idx)
+          << " " << param_idx << std::endl;
       asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s\n", oss.str().c_str());
+      throw -1;
       return asynError;
     }
     else {
@@ -352,6 +354,7 @@ dldDetectorv2::dldDetectorv2(
 
   // create all parameters that are defined by the library if they have an
   // entry in our database of EPICS records ("dldDetectorv2.template")
+  lock();
   libusr_.createParams(
     [this](const char* name, asynParamType aptype, int* apidx) {
       return createParam(name, aptype, apidx);
@@ -402,6 +405,8 @@ dldDetectorv2::dldDetectorv2(
   status |= setDoubleParam (ADAcquireTime, 0.50);
   status |= setDoubleParam (ADAcquirePeriod, .005);
   status |= setIntegerParam(ADNumImages, 10);
+
+  unlock();
 
   if (status) {
     printf("%s: unable to set ADDriver / DLD parameters\n", functionName);

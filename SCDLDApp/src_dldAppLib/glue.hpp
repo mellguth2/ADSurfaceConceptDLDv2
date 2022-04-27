@@ -97,14 +97,14 @@ public:
     read_float64_funs.insert({17, &T::read_MinTSI});
     write_float64_funs.insert({18, &T::write_SizeTSI});
     read_float64_funs.insert({18, &T::read_SizeTSI});
-    read_int_funs.insert({19, &T::read_RatemeterMax});
-    write_string_funs.insert({20, &T::write_H5EventsFilePath});
-    read_string_funs.insert({20, &T::read_H5EventsFilePath});
-    write_string_funs.insert({21, &T::write_H5EventsComment});
-    read_string_funs.insert({21, &T::read_H5EventsComment});
-    write_enum_funs.insert({22, &T::write_H5EventsActive});
-    read_enum_funs.insert({22, &T::read_H5EventsActive});
-    read_int_funs.insert({23, &T::read_H5EventsFileError});
+    read_int_funs.insert({20, &T::read_RatemeterMax});
+    write_string_funs.insert({24, &T::write_H5EventsFilePath});
+    read_string_funs.insert({24, &T::read_H5EventsFilePath});
+    write_string_funs.insert({25, &T::write_H5EventsComment});
+    read_string_funs.insert({25, &T::read_H5EventsComment});
+    write_enum_funs.insert({26, &T::write_H5EventsActive});
+    read_enum_funs.insert({26, &T::read_H5EventsActive});
+    read_int_funs.insert({27, &T::read_H5EventsFileError});
   }
 
   int write_int(size_t pidx, int value) {

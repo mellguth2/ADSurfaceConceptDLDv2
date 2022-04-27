@@ -386,6 +386,7 @@ void DLD::configure_pipes()
   configure_pipes_ratemeter();
   configure_pipes_liveimagexy();
   configure_pipes_timehisto();
+  configure_hdf5stream();
 }
 
 void DLD::configure_pipes_liveimagexy()
@@ -427,6 +428,12 @@ void DLD::configure_pipes_timehisto()
 void DLD::configure_timebin()
 {
   created_at_init_.push_back(&timebin_);
+}
+
+void DLD::configure_hdf5stream()
+{
+  created_at_init_.push_back(&hdf5stream_);
+  disconnect_listeners_.push_back(&hdf5stream_);
 }
 
 void DLD::cb_measurement_complete(int reason)

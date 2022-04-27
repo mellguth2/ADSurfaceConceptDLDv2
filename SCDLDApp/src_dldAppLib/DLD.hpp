@@ -87,6 +87,7 @@ private:
   void configure_pipes_ratemeter();
   void configure_pipes_timehisto();
   void configure_timebin();
+  void configure_hdf5stream();
   void cb_measurement_complete(int reason);
   static void cb_static_measurement_complete(void* priv, int reason);
   int start_measurement();

@@ -7,6 +7,8 @@
 
 #include "DldAppCommon.hpp"
 
+#include <iostream>
+
 using namespace DldApp;
 
 
@@ -63,6 +65,9 @@ int LibUser::createParams(
       first_driver_param_ = asyn_port_param_idx;
     }
     param_refs_[asyn_port_param_idx] = i;
+    std::cout << "LibUser::createParams : drvidx "
+              << asyn_port_param_idx << " -> libidx " << i
+              << "  " << p.drv_name << std::endl;
     param_back_refs_.push_back(asyn_port_param_idx);
   }
   return 0;
