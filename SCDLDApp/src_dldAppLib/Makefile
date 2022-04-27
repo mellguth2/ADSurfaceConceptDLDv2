@@ -17,9 +17,11 @@ LIB_SRCS += dldApp.cpp \
   TimeBin.cpp \
   PipeRatemeter.cpp \
   PipeImageXY.cpp \
-  PipeTimeHisto.cpp
+  PipeTimeHisto.cpp \
+  HDF5Stream.cpp
 USR_CXXFLAGS += -std=c++17
 
+LIB_LIBS += sctdc_hdf5
 LIB_SYS_LIBS += scTDC
 
 #=============================

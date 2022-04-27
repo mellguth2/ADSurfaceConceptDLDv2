@@ -11,6 +11,8 @@
 #include "PipeImageXY.hpp"
 #include "PipeTimeHisto.hpp"
 #include "TimeBin.hpp"
+#include "iDisconnectListener.hpp"
+#include "HDF5Stream.hpp"
 
 class DLD : public Glue<DLD>
 {
@@ -69,6 +71,14 @@ public:
   int write_SizeTSI(double);
   int read_SizeTSI(double*);
   int read_RatemeterMax(int*);
+  int write_H5EventsFilePath(const std::string&);
+  int read_H5EventsFilePath(std::string&);
+  int write_H5EventsComment(const std::string&);
+  int read_H5EventsComment(std::string&);
+  int write_H5EventsActive(int);
+  int read_H5EventsActive(int*);
+  int read_H5EventsFileError(int*);
+
 private:
   // functions
   int init_impl();
@@ -89,7 +99,9 @@ private:
   PipeRatemeter ratemeter_;
   PipeImageXY liveimagexy_;
   PipeTimeHisto timehisto_;
+  HDF5Stream hdf5stream_;
   std::vector<iCreatedAtInit*> created_at_init_;
   std::vector<iEndOfMeasListener*> eom_listeners_;
   std::vector<iStartOfMeasListener*> som_listeners_;
+  std::vector<iDisconnectListener*> disconnect_listeners_;
 };

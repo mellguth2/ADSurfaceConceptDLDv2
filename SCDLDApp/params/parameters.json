@@ -414,5 +414,71 @@
     "epicsprops":{
       "asynportname":"DLD_TIME_HISTO_Y"
     }
+  },
+  {
+    "node":"parameter",
+    "name":"H5EventsFilePath",
+    "display name":"HDF5 events file path",
+    "description":"",
+    "data type": "string",
+    "read-only":false,
+    "default":"m1.h5",
+    "persistent":true,
+    "unit":"",
+    "maxlen":2048,
+    "epicsprops":{
+      "asynportname":"DLD_H5EVENTS_FILE"
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"H5EventsComment",
+    "display name":"HDF5 events user comment",
+    "description":"",
+    "data type": "string",
+    "read-only":false,
+    "default":"(empty)",
+    "persistent":true,
+    "unit":"",
+    "maxlen":4096,
+    "epicsprops":{
+      "asynportname":"DLD_H5EVENTS_COMMENT"
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"H5EventsActive",
+    "display name":"HDF5 events active",
+    "description":"Open / Close HDF5 file",
+    "data type":"enum",
+    "read-only":false,    
+    "default":"OFF",
+    "persistent":false,
+    "unit":"",
+    "options":{
+      "OFF":0,
+      "ON":1
+    },
+    "epicsprops":{
+      "asynportname":"DLD_H5EVENTS_ACTIVE"
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"H5EventsFileError",
+    "display name":"HDF5 events file error",
+    "description":"1 if error during opening the HDF5 file for writing",
+    "data type":"int32",
+    "read-only":true,
+    "default":"0",
+    "persistent":false,
+    "unit":"",
+    "range":{
+      "min":0,
+      "max":1
+    },
+    "epicsprops":{
+      "asynportname":"DLD_H5EVENTS_FILEERROR"
+    }
   }
 ]

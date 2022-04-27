@@ -1,5 +1,5 @@
 #include "DldAppLibUser.hpp"
-#include "dldApp.h"
+#include <dldApp.h> // public API of application library
 #include <exception>
 #include <string>
 #include <memory>

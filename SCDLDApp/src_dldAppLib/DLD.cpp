@@ -2,12 +2,13 @@
 
 #include "DLD.hpp"
 #include <string>
-#include <scTDC.h>
-#include <scTDC_error_codes.h>
 #include <thread>
 #include <future>
-#include <iostream>
 
+#include <scTDC.h>              // scTDC SDK
+#include <scTDC_error_codes.h>  // scTDC SDK
+
+#include <iostream>
 
 enum ImageModeEnum : int {
   IMAGEMODE_SINGLE = 0,
@@ -94,6 +95,9 @@ int DLD::write_Initialize(int v)
       update_Initialize(data_.initialized);
       update_StatusMessage("hardware closed");
       update_DetectorState(DETECTORSTATE_DISCONNECTED);
+      for (auto& listeners : disconnect_listeners_) {
+        listeners->disconnect();
+      }
     });
   }
   return 0;
@@ -319,6 +323,49 @@ int DLD::read_SizeTSI(double *dest)
 int DLD::read_RatemeterMax(int *dest)
 {
   *dest = data_.ratemeter_max;
+  return 0;
+}
+
+int DLD::write_H5EventsFilePath(const std::string &v)
+{
+  hdf5stream_.setFilePath(v);
+  return 0;
+}
+
+int DLD::read_H5EventsFilePath(std::string &dest)
+{
+  dest = hdf5stream_.filePath();
+  return 0;
+}
+
+int DLD::write_H5EventsComment(const std::string &v)
+{
+  hdf5stream_.setUserComment(v);
+  return 0;
+}
+
+int DLD::read_H5EventsComment(std::string &dest)
+{
+  dest = hdf5stream_.userComment();
+  return 0;
+}
+
+int DLD::write_H5EventsActive(int v)
+{
+  hdf5stream_.setActive(v);
+  update_H5EventsFileError(hdf5stream_.fileError());
+  return 0;
+}
+
+int DLD::read_H5EventsActive(int *dest)
+{
+  *dest = hdf5stream_.isActive();
+  return 0;
+}
+
+int DLD::read_H5EventsFileError(int *dest)
+{
+  *dest = hdf5stream_.fileError();
   return 0;
 }
 
