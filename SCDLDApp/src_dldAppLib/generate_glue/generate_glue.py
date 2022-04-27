@@ -67,7 +67,7 @@ def upd_fun_arr1d(elem_datatype):
 # example
 #  void update_LiveImageXY(size_t nr_elem, size_t width, int* data) {
 #    cb_arr2d.cb(cb_arr2d.priv, 9, nr_elem*sizeof(int), width, data); }
-  
+
 def upd_fun_arr2d(elem_datatype):
   c_type = element_data_type_to_ctype[elem_datatype]
   s = '  void update_<NAME>(size_t nr_elem, size_t width, <C_TYPE>* data) {' \
@@ -86,30 +86,30 @@ def generate_glue(infile, outfile):
       # ----------
       f_out.write(code1)
       # ----------
-      pidx = 0
+      pidx = -1
       for param in parameters:
         if param['node'] != 'parameter':
           continue
+        pidx += 1
         if param['data type'] in ('array1d', 'array2d'):
           continue # no read/write funcs for arrays, yet.
         if not param['read-only']:
           f_out.write(reg_wr[param['data type']](pidx, param['name']))
         f_out.write(reg_rd[param['data type']](pidx, param['name']))
-        pidx += 1
       # -----------
       f_out.write(code2)
       # -----------
-      pidx = 0
+      pidx = -1
       for param in parameters:
         if param['node'] != 'parameter':
           continue
+        pidx += 1
         if param['data type'] == 'array1d':
           f_out.write(upd_fun_arr1d(param['element data type'])(pidx, param['name']))
         elif param['data type'] == 'array2d':
           f_out.write(upd_fun_arr2d(param['element data type'])(pidx, param['name']))
         else:
           f_out.write(upd[param['data type']](pidx, param['name']))
-        pidx += 1
       # -----------
       f_out.write(code3)
 
