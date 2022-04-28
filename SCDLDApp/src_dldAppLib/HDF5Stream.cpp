@@ -1,3 +1,5 @@
+/* Copyright 2022 Surface Concept GmbH */
+
 #include "HDF5Stream.hpp"
 
 #include <scTDC_hdf5.h>               // add-on library, not the scTDC SDK

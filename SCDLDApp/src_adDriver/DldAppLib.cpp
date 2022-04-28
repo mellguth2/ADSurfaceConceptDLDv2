@@ -1,5 +1,7 @@
 #include "DldAppLib.hpp"
 
+/* Copyright 2022 Surface Concept GmbH */
+
 using namespace DldApp;
 
 Lib::Lib()

@@ -1,4 +1,5 @@
 /* 
+ * Copyright 2022 Surface Concept GmbH
  * dldDetectorv2.cpp
  */
 

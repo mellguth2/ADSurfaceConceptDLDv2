@@ -1,3 +1,4 @@
+/* Copyright 2022 Surface Concept GmbH */
 #include "InitLibDataFromJSON.hpp"
 #include <string>
 #include "nlohmann/json.hpp"

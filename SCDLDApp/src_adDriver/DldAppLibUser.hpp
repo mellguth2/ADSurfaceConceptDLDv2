@@ -1,6 +1,8 @@
 #ifndef DLDAPPLIBPARAMS_HPP
 #define DLDAPPLIBPARAMS_HPP
 
+/* Copyright 2022 Surface Concept GmbH */
+
 #include <string>
 #include <vector>
 #include <memory>

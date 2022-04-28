@@ -1,5 +1,7 @@
 #pragma once
 
+/* Copyright 2022 Surface Concept GmbH */
+
 #include <cstddef>
 #include <asynParamType.h>
 #include "DldAppLib.hpp"
