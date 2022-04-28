@@ -8,7 +8,7 @@
 #include <iostream>
 
 PipeTimeHisto::PipeTimeHisto(TimeBin& time_bin)
-  : time_bin_(time_bin)
+  : time_bin_(time_bin), accumulate_(false)
 {
   user_tstart_ns_ = 0.0;
   user_tsize_ns_ = 1e6;
@@ -117,6 +117,16 @@ double PipeTimeHisto::sizeTSI() const
   return user_tsize_ns_;
 }
 
+void PipeTimeHisto::setAccumulate(int v)
+{
+  accumulate_ = v > 0;
+}
+
+int PipeTimeHisto::accumulate() const
+{
+  return accumulate_ ? 1 : 0;
+}
+
 
 int PipeTimeHisto::static_allocator_cb(void *priv, void **buf)
 {
@@ -125,7 +135,9 @@ int PipeTimeHisto::static_allocator_cb(void *priv, void **buf)
 
 int PipeTimeHisto::allocator_cb(void **buf)
 {
-  std::fill(data_.begin(), data_.end(), 0u); // reset to all zeros
+  if (!accumulate_) {
+    std::fill(data_.begin(), data_.end(), 0u); // reset to all zeros
+  }
   *buf = data_.data();
   return 0;
 }
@@ -134,6 +146,7 @@ void PipeTimeHisto::resize_data()
 {
   auto s = static_cast<std::size_t>(params_->roi.size.time);
   data_.resize(s);
+  std::fill(data_.begin(), data_.end(), 0u);
   xaxis_.resize(s);
   yaxis_.resize(s);
 }

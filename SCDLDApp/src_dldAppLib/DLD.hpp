@@ -78,6 +78,11 @@ public:
   int write_H5EventsActive(int);
   int read_H5EventsActive(int*);
   int read_H5EventsFileError(int*);
+  int write_LiveImageXYAccum(int);
+  int read_LiveImageXYAccum(int*);
+  int write_TimeHistoAccum(int);
+  int read_TimeHistoAccum(int*);
+
 
 private:
   // functions

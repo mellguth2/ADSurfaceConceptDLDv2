@@ -162,6 +162,16 @@ int PipeImageXY::binY() const
   return log2_(next_params_->binning.y);
 }
 
+void PipeImageXY::setAccumulate(int v)
+{
+  accumulate_ = v > 0;
+}
+
+int PipeImageXY::accumulate() const
+{
+  return accumulate_ ? 1 : 0;
+}
+
 int PipeImageXY::static_allocator_cb(void* priv, void** buf)
 {
   return static_cast<PipeImageXY*>(priv)->allocator_cb(buf);
@@ -170,7 +180,9 @@ int PipeImageXY::static_allocator_cb(void* priv, void** buf)
 int PipeImageXY::allocator_cb(void** buf)
 {
   // called by scTDC at the beginning of the measurement
-  std::fill(data_.begin(), data_.end(), 0u); // reset to all zeros
+  if (!accumulate_) {
+    std::fill(data_.begin(), data_.end(), 0u); // reset to all zeros
+  }
   *buf = data_.data();
   return 0;
 }
@@ -179,6 +191,7 @@ void PipeImageXY::resize_data()
 {
   data_.resize(
     static_cast<std::size_t>(params_->roi.size.x) * params_->roi.size.y);
+  std::fill(data_.begin(), data_.end(), 0u);
 }
 
 int PipeImageXY::log2_(unsigned v)

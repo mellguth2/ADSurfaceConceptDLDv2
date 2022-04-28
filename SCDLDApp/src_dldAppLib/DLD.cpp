@@ -111,6 +111,10 @@ int DLD::read_Initialize(int *v)
 
 int DLD::write_ConfigFile(const std::string& v)
 {
+  std::cout << std::endl
+            << "-----------------------------" << std::endl
+            << "write_ConfigFile(" << v << ")" << std::endl
+            << "-----------------------------" << std::endl;
   data_.configfile = v;
   return 0;
 }
@@ -366,6 +370,30 @@ int DLD::read_H5EventsActive(int *dest)
 int DLD::read_H5EventsFileError(int *dest)
 {
   *dest = hdf5stream_.fileError();
+  return 0;
+}
+
+int DLD::write_LiveImageXYAccum(int v)
+{
+  liveimagexy_.setAccumulate(v);
+  return 0;
+}
+
+int DLD::read_LiveImageXYAccum(int *dest)
+{
+  *dest = liveimagexy_.accumulate();
+  return 0;
+}
+
+int DLD::write_TimeHistoAccum(int v)
+{
+  timehisto_.setAccumulate(v);
+  return 0;
+}
+
+int DLD::read_TimeHistoAccum(int *dest)
+{
+  *dest = timehisto_.accumulate();
   return 0;
 }
 

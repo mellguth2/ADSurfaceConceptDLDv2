@@ -35,6 +35,8 @@ public:
   int sizeY() const;
   int binX() const;
   int binY() const;
+  void setAccumulate(int);
+  int accumulate() const;
 private:
   static int static_allocator_cb(void* priv, void** buf);
   int allocator_cb(void** buf);
@@ -44,6 +46,7 @@ private:
   int dev_desc_ = -1;
   int pipe_desc_ = -1;
   bool change_request_ = false;
+  bool accumulate_ = false;
   data_consumer_t data_consumer_;
   std::unique_ptr<sc_pipe_dld_image_xy_params_t> params_;
   std::unique_ptr<sc_pipe_dld_image_xy_params_t> next_params_;

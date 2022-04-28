@@ -98,13 +98,17 @@ public:
     write_float64_funs.insert({18, &T::write_SizeTSI});
     read_float64_funs.insert({18, &T::read_SizeTSI});
     read_int_funs.insert({20, &T::read_RatemeterMax});
-    write_string_funs.insert({24, &T::write_H5EventsFilePath});
-    read_string_funs.insert({24, &T::read_H5EventsFilePath});
-    write_string_funs.insert({25, &T::write_H5EventsComment});
-    read_string_funs.insert({25, &T::read_H5EventsComment});
-    write_enum_funs.insert({26, &T::write_H5EventsActive});
-    read_enum_funs.insert({26, &T::read_H5EventsActive});
-    read_int_funs.insert({27, &T::read_H5EventsFileError});
+    write_enum_funs.insert({22, &T::write_LiveImageXYAccum});
+    read_enum_funs.insert({22, &T::read_LiveImageXYAccum});
+    write_enum_funs.insert({25, &T::write_TimeHistoAccum});
+    read_enum_funs.insert({25, &T::read_TimeHistoAccum});
+    write_string_funs.insert({26, &T::write_H5EventsFilePath});
+    read_string_funs.insert({26, &T::read_H5EventsFilePath});
+    write_string_funs.insert({27, &T::write_H5EventsComment});
+    read_string_funs.insert({27, &T::read_H5EventsComment});
+    write_enum_funs.insert({28, &T::write_H5EventsActive});
+    read_enum_funs.insert({28, &T::read_H5EventsActive});
+    read_int_funs.insert({29, &T::read_H5EventsFileError});
   }
 
   int write_int(size_t pidx, int value) {
@@ -203,13 +207,15 @@ public:
   void update_RatemeterMax(int v) { cb_int32.cb(cb_int32.priv, 20, v); }
   void update_LiveImageXY(size_t nr_elem, size_t width, int* data) {
     cb_arr2d.cb(cb_arr2d.priv, 21, nr_elem*sizeof(int), width, data); }
+  void update_LiveImageXYAccum(int v) { cb_enum.cb(cb_enum.priv, 22, v); }
   void update_TimeHistoDataX(size_t nr_elem, double* data) { 
-    cb_arr1d.cb(cb_arr1d.priv, 22, nr_elem*sizeof(double), data); }
-  void update_TimeHistoDataY(size_t nr_elem, double* data) { 
     cb_arr1d.cb(cb_arr1d.priv, 23, nr_elem*sizeof(double), data); }
-  void update_H5EventsFilePath(const std::string& v) { cb_string.cb(cb_string.priv, 24, v.c_str()); }
-  void update_H5EventsComment(const std::string& v) { cb_string.cb(cb_string.priv, 25, v.c_str()); }
-  void update_H5EventsActive(int v) { cb_enum.cb(cb_enum.priv, 26, v); }
-  void update_H5EventsFileError(int v) { cb_int32.cb(cb_int32.priv, 27, v); }
+  void update_TimeHistoDataY(size_t nr_elem, double* data) { 
+    cb_arr1d.cb(cb_arr1d.priv, 24, nr_elem*sizeof(double), data); }
+  void update_TimeHistoAccum(int v) { cb_enum.cb(cb_enum.priv, 25, v); }
+  void update_H5EventsFilePath(const std::string& v) { cb_string.cb(cb_string.priv, 26, v.c_str()); }
+  void update_H5EventsComment(const std::string& v) { cb_string.cb(cb_string.priv, 27, v.c_str()); }
+  void update_H5EventsActive(int v) { cb_enum.cb(cb_enum.priv, 28, v); }
+  void update_H5EventsFileError(int v) { cb_int32.cb(cb_int32.priv, 29, v); }
 
 };

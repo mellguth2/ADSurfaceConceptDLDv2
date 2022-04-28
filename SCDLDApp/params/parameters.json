@@ -136,7 +136,7 @@
     "data type": "enum",
     "read-only":false,
     "default":"Single",
-    "persistent":false,
+    "persistent":true,
     "unit":"",
     "options":{
       "Single":0,
@@ -189,6 +189,7 @@
     "description":"log_2 of binning in x direction",
     "data type":"int32",
     "read-only":false,
+    "persistent":true,
     "default":0,
     "unit":"",
     "range":{
@@ -206,6 +207,7 @@
     "description":"log_2 of binning in y direction",
     "data type":"int32",
     "read-only":false,
+    "persistent":true,
     "default":0,
     "unit":"",
     "range":{
@@ -223,6 +225,7 @@
     "description":"in binned units",
     "data type":"int32",
     "read-only":false,
+    "persistent":true,
     "default":0,
     "unit":"",
     "range":{
@@ -240,6 +243,7 @@
     "description":"in binned units",
     "data type":"int32",
     "read-only":false,
+    "persistent":true,
     "default":0,
     "unit":"",
     "range":{
@@ -257,7 +261,8 @@
     "description":"in binned units",
     "data type":"int32",
     "read-only":false,
-    "default":0,
+    "persistent":true,
+    "default":750,
     "unit":"",
     "range":{
       "min":0,
@@ -274,7 +279,8 @@
     "description":"in binned units",
     "data type":"int32",
     "read-only":false,
-    "default":0,
+    "persistent":true,
+    "default":750,
     "unit":"",
     "range":{
       "min":0,
@@ -291,6 +297,7 @@
     "description":"number of data points in histogram on t axis",
     "data type":"int32",
     "read-only":false,
+    "persistent":true,
     "default":100,
     "unit":"",
     "range":{
@@ -308,6 +315,7 @@
     "description":"start of time interval",
     "data type":"float64",
     "read-only":false,
+    "persistent":true,
     "default":0.0,
     "unit":"ns",
     "range":{
@@ -326,7 +334,8 @@
     "description":"length of time interval",
     "data type":"float64",
     "read-only":false,
-    "default":0.0,
+    "persistent":true,
+    "default":10000.0,
     "unit":"ns",
     "range":{
       "min":0.0,
@@ -387,6 +396,24 @@
   },
   {
     "node":"parameter",
+    "name":"LiveImageXYAccum",
+    "display name":"accumulate live image XY",
+    "description":"",
+    "data type":"enum",
+    "read-only":false,
+    "default":"OFF",
+    "persistent":true,
+    "unit":"",
+    "options":{
+      "OFF":0,
+      "ON":1
+    },
+    "epicsprops":{
+      "asynportname":"LIVE_XY_ACCUM"
+    }
+  },
+  {
+    "node":"parameter",
     "name":"TimeHistoDataX",
     "display name":"time histogram, x values",
     "description":"",
@@ -413,6 +440,24 @@
     "unit":"",
     "epicsprops":{
       "asynportname":"DLD_TIME_HISTO_Y"
+    }
+  },
+  {
+    "node":"parameter",
+    "name":"TimeHistoAccum",
+    "display name":"accumulate time histogram",
+    "description":"",
+    "data type":"enum",
+    "read-only":false,
+    "default":"OFF",
+    "persistent":true,
+    "unit":"",
+    "options":{
+      "OFF":0,
+      "ON":1
+    },
+    "epicsprops":{
+      "asynportname":"TIME_HISTO_ACCUM"
     }
   },
   {

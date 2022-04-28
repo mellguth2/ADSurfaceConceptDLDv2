@@ -30,6 +30,8 @@ public:
   int sizeT() const;
   double minTSI() const;
   double sizeTSI() const;
+  void setAccumulate(int);
+  int accumulate() const;
 private:
   static int static_allocator_cb(void* priv, void** buf);
   int allocator_cb(void** buf);
@@ -50,6 +52,7 @@ private:
   double user_tsize_ns_;
   double actual_tstart_ns_;
   double actual_tsize_ns_;
+  bool accumulate_;
 };
 
 #endif // PIPETIMEHISTO_HPP

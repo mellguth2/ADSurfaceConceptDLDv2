@@ -189,7 +189,7 @@ void HDF5WriterImplThread::job_write_attributes_()
     cfg_.user_comment = "(empty)";
   loc_.file.addRootAttrib("UserComment", cfg_.user_comment);
   loc_.file.addRootAttrib("Description",
-    std::string("DLD Detector data written from Surface Concept DldGui2"));
+    std::string("DLD Detector data"));
 }
 
 void HDF5WriterImplThread::job_add_datasets_()
