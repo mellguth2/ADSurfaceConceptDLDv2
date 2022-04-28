@@ -1,6 +1,8 @@
 #ifndef PIPETIMEHISTO_HPP
 #define PIPETIMEHISTO_HPP
 
+/* Copyright 2022 Surface Concept GmbH */
+
 #include "iCreatedAtInit.hpp"
 #include "iStartOfMeasListener.hpp"
 #include "iEndOfMeasListener.hpp"

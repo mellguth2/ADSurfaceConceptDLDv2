@@ -1,3 +1,4 @@
+/* Copyright 2022 Surface Concept GmbH */
 #include "PipeTimeHisto.hpp"
 
 #include <cstring>

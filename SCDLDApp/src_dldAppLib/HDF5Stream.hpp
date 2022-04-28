@@ -1,5 +1,7 @@
 #pragma once
 
+/* Copyright 2022 Surface Concept GmbH */
+
 #include <string>
 #include "iCreatedAtInit.hpp"
 #include "iDisconnectListener.hpp"

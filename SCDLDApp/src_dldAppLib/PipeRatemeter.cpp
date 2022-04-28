@@ -1,3 +1,4 @@
+/* Copyright 2022 Surface Concept GmbH */
 #include "PipeRatemeter.hpp"
 #include <scTDC.h>
 #include <scTDC_types.h>

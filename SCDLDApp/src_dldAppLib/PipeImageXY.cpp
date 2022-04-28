@@ -1,3 +1,4 @@
+/* Copyright 2022 Surface Concept GmbH */
 #include "PipeImageXY.hpp"
 
 #include <cstring>
