@@ -1,4 +1,7 @@
 #pragma once
+
+/* Copyright 2022 Surface Concept GmbH */
+
 #include "iCreatedAtInit.hpp"
 
 class TimeBin : public iCreatedAtInit

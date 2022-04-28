@@ -1,3 +1,4 @@
+/* Copyright 2022 Surface Concept GmbH */
 #include "ADUpdateConsumer.hpp"
 #include "dldDetectorv2.h"
 #include "DldAppLibUser.hpp"

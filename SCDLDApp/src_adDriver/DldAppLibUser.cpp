@@ -1,3 +1,4 @@
+/* Copyright 2022 Surface Concept GmbH */
 #include "DldAppLibUser.hpp"
 #include <dldApp.h> // public API of application library
 #include <exception>

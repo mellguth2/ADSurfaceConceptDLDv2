@@ -1,5 +1,7 @@
 #pragma once
 
+/* Copyright 2022 Surface Concept GmbH */
+
 #include "iCreatedAtInit.hpp"
 #include "iEndOfMeasListener.hpp"
 #include "iStartOfMeasListener.hpp"
