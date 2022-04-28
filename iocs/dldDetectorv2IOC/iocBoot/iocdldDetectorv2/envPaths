@@ -1,6 +1,6 @@
 epicsEnvSet("IOC","iocdldDetectorv2")
 epicsEnvSet("TOP","/opt/app-root/src/epics-sc-dld-ioc-v2.0/install")
-epicsEnvSet("ADSURFACECONCEPTDLDV2","/opt/app-root/src/epics-sc-dld-ioc-v2.0/install/../..")
+epicsEnvSet("EPICS_HOME","/opt/app-root/src/epics-sc-dld-ioc-v2.0")
 epicsEnvSet("SUPPORT","/opt/app-root/src/epics-sc-dld-ioc-v2.0/synApps_5_8/support")
 epicsEnvSet("AREA_DETECTOR","/opt/app-root/src/epics-sc-dld-ioc-v2.0/synApps_5_8/support/areaDetector")
 epicsEnvSet("EPICS_BASE","/opt/app-root/src/epics-sc-dld-ioc-v2.0/base-3.15.5")
